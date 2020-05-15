@@ -40,7 +40,11 @@
                    (map (lambda (range)
                           (if (car range)
                               (apply slice (cons items (cdr range)))
-                              (list (list-ref* items (cadr range)))))
+                              (let ((idx (cadr range)))
+                                (list
+                                 (if (< idx 0)
+                                     (list-ref* (reverse items) (abs (+ idx 1)))
+                                     (list-ref* items idx))))))
                         ranges)))
              (if write-sexp?
                  (write (car slices))
