@@ -38,7 +38,7 @@
         (iterator
          (lambda (line-or-sexp)
            (let ((new-bindings
-                  (eval `(let* ((INPUT ,line-or-sexp)
+                  (eval `(let* ((INPUT (quote ,line-or-sexp))
                                 ,@bindings)
                            (begin ,@(with-input-from-string exp read-list))
                            (list ,@(map car bindings))))))

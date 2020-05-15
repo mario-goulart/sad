@@ -25,7 +25,7 @@
                (unless (eval `(let ((INPUT ,line-or-sexp))
                                 (begin ,@(with-input-from-string pattern read-list))))
                  (print line-or-sexp))
-               (unless (irregex-match
+               (unless (irregex-search
                         (if use-sre?
                             (with-input-from-string pattern read)
                             pattern)

@@ -16,7 +16,7 @@
                   ((equal? arg "-s")
                    (when (null? (cdr args))
                      (die! "format: -s requires an argument"))
-                   (set! sep arg)
+                   (set! sep (cadr args))
                    (loop (cddr args)))
                   (else
                    (set! format arg)
