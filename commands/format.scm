@@ -27,7 +27,12 @@
       (let ((iterator (if read-sexp? for-each-sexp for-each-line)))
         (iterator
          (lambda (line-or-sexp)
-           (apply printf (cons format
-                               (if read-sexp?
-                                   line-or-sexp
-                                   (string-split line-or-sexp sep))))))))))
+           (let ((tokens (string-split line-or-sexp sep))
+                 (str format))
+             (for-each
+              (lambda (idx token)
+                (set! str (irregex-replace/all `(: "{" ,(number->string idx) "}") str token)))
+              (iota (length tokens))
+              tokens)
+             (set! str (irregex-replace/all `(: "{" numeric "}") str ""))
+             (printf str))))))))
