@@ -1,35 +1,53 @@
-(define-command 'cols "Select columns"
-  (lambda args
-    (let ((ranges '())
-          (read-sexp? #f)
-          (write-sexp? #f)
-          (sep " \t"))
-      (let loop ((args args))
-        (unless (null? args)
-          (let ((arg (car args)))
-            (cond ((equal? arg "-w")
-                   (set! write-sexp? #t)
-                   (loop (cdr args)))
-                  ((equal? arg "-r")
-                   (set! read-sexp? #t)
-                   (loop (cdr args)))
-                  ((equal? arg "-s")
-                   (when (null? (cdr args))
-                     (die! "cols: -s requires an argument"))
-                   (set! sep (cadr args))
-                   (loop (cddr args)))
-                  (else
-                   (let ((range (map string->number (string-split arg ":"))))
-                     (unless (every integer? range)
-                       (die! "cols: invalid range: ~a" arg))
-                     (set! ranges (cons
-                                   (cons (and (substring-index ":" arg) #t)
-                                         range)
-                                   ranges))
-                     (loop (cdr args))))))))
-      (when (null? ranges)
+(define-command 'cols
+  "\
+cols [<options>] <range> [<range> ...]
+
+  Select columns based on ranges.  Syntax of ranges:
+  * `<number>': a single column whose index is <number>
+  * `:<number>': columns from 0 to <number>
+  * `<number>:': columns from <number> to the last column
+  Negative indexes are supported.
+
+  <options>:
+    --sep | -s
+      String used to separate tokens (given to `string-split').
+
+    --read-sexp | -r
+      Assume inputs are sexps.
+
+    --write-sexp | -w
+      Write sexps.
+"
+  (lambda args*
+    (let* ((args (parse-command-line
+                  args*
+                  '(((--help -help -h))
+                    ((--read-sexp -r))
+                    ((--write-sexp -w))
+                    ((--sep -s) . separator)
+                    )))
+           (read-sexp? (get-opt '(--read-sexp -r) args flag?: #t))
+           (write-sexp? (get-opt '(--write-sexp -w) args flag?: #t))
+           (sep (or (get-opt '(--sep -s) args) " \t"))
+           (ranges% (get-opt '(--) args))
+           (ranges '()))
+
+      (handle-command-help 'cols args)
+
+      (when (null? ranges%)
         (die! "cols: missing columns specification"))
-      (set! ranges (reverse ranges))
+
+      (for-each
+       (lambda (r)
+         (let ((range (map string->number (string-split r ":"))))
+           (unless (every integer? range)
+             (die! "cols: invalid range: ~a" range))
+           (set! ranges (cons
+                         (cons (and (substring-index ":" r) #t)
+                               range)
+                         ranges))))
+       ranges%)
+
       (let ((iterator (if read-sexp? for-each-sexp for-each-line)))
         (iterator
          (lambda (line-or-sexp)

@@ -1,44 +1,48 @@
-(define-command 'eval "Eval"
-  (lambda args
-    (let ((read-sexp? #f)
-          (write-sexp? #f)
-          (exp #f)
-          (bindings '()))
-      (let loop ((args args))
-        (unless (null? args)
-          (let ((arg (car args)))
-            (cond ((equal? arg "-r")
-                   (set! read-sexp? #t)
-                   (loop (cdr args)))
-                  ((equal? arg "-s")
-                   (when (null? (cdr args))
-                     (die! "eval: -s requires an argument"))
-                   (set! sep arg)
-                   (loop (cddr args)))
-                  ((equal? arg "-b")
-                   (when (or (null? (cdr args)) (null? (cddr args)))
-                     (die! "eval: -b: missing argument"))
-                   (let ((var (cadr args))
-                         (val (caddr args)))
-                     (set! bindings
-                           (cons
-                            (list (string->symbol var)
-                                  (with-input-from-string val read))
-                            bindings)))
-                   (loop (cdddr args)))
-                  (else
-                   (set! exp arg)
-                   (loop (cdr args)))))))
+(define-command 'eval
+  "\
+eval <options> <exp>
+
+  Evaluate the Scheme expression <exp>.  The `INPUT' and `LINENO'
+  variables are bound to the given input and to the line number in the
+  evaluation context, respectively.  <exp> is implicitly placed in a
+  `begin' form.  The big-chicken egg is implicitly imported in the
+  evaluation context.
+
+  <options>:
+    --bind | -b <variable> <value>
+      Bind <variable> to <value> in the execution context of <exp>.
+
+    --read-sexp | -r
+      Assume inputs are sexps.
+"
+  (lambda args*
+    (let* ((args (parse-command-line
+                  args*
+                  `(((--help -help -h))
+                    ((--bind -b)
+                     ,string->symbol
+                     ,(lambda (x) (with-input-from-string x read)))
+                    ((--read-sexp -r))
+                    ((--sep -s) . separator)
+                    )))
+           (read-sexp? (get-opt '(--read-sexp -r) args flag?: #t))
+           (bindings (get-opt '(--bind -b) args multiple?: #t))
+           (exp (and-let* ((e (get-opt '(--) args)))
+                  (and (not (null? e)) (car e)))))
+
+      (handle-command-help 'eval args)
+
       (unless exp
         (die! "eval: missing expression"))
 
-      (set! bindings (reverse bindings))
-
-      (let ((iterator (if read-sexp? for-each-sexp for-each-line)))
+      (let ((iterator (if read-sexp? for-each-sexp for-each-line))
+            (lineno -1))
         (iterator
          (lambda (line-or-sexp)
+           (set! lineno (add1 lineno))
            (let ((new-bindings
                   (eval `(let* ((INPUT (quote ,line-or-sexp))
+                                (LINENO (quote ,lineno))
                                 ,@bindings)
                            (begin
                              (import big-chicken)

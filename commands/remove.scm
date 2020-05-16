@@ -1,33 +1,41 @@
-(define-command 'remove "Remove"
-  (lambda args
-    (let ((pattern #f)
-          (use-sre? #f)
-          (use-sexp? #f))
-      (let loop ((args args))
-        (unless (null? args)
-          (let ((arg (car args)))
-            (cond ((equal? arg "-s")
-                   (set! use-sexp? #t)
-                   (loop (cdr args)))
-                  ((equal? arg "-S")
-                   (set! use-sre? #t)
-                   (loop (cdr args)))
-                  (else
-                   (set! pattern arg)
-                   (loop (cdr args)))))))
-      (unless pattern
-        (die! "remove: missing pattern"))
+(define-command 'remove
+  "\
+remove [<options>] <pattern>
+  Remove lines matching <pattern> (a regular expression).
 
-      (let ((iterator (if use-sexp? for-each-sexp for-each-line)))
-        (iterator
-         (lambda (line-or-sexp)
-           (if use-sexp?
-               (unless (eval `(let ((INPUT ,line-or-sexp))
-                                (begin ,@(with-input-from-string pattern read-list))))
-                 (print line-or-sexp))
-               (unless (irregex-search
-                        (if use-sre?
-                            (with-input-from-string pattern read)
-                            pattern)
-                        line-or-sexp)
-                 (print line-or-sexp)))))))))
+  <options>:
+  --read-sexp | -r
+    Assume inputs are sexps.
+
+  --sre | -S
+    Indicate that <pattern> uses SRE syntax.
+"
+  (lambda args*
+    (let* ((args (parse-command-line
+                  args*
+                  '(((--help -help -h))
+                    ((--read-sexp -r))
+                    ((--sre -S)))))
+           (read-sexp? (get-opt '(--read-sexp -r) args flag?: #t))
+           (use-sre? (get-opt '(--sre -S) args flag?: #t))
+           (pattern (and-let* ((p (get-opt '(--) args)))
+                      (and (not (null? p)) (car p)))))
+
+      (handle-command-help 'remove args)
+
+      (unless pattern
+        (die! "remove: missing pattern."))
+
+      (input-iterator
+       read-sexp?
+       (lambda (sexp)
+         (unless (eval `(let ((INPUT ,sexp))
+                          (begin ,@(with-input-from-string pattern read-list))))
+           (print sexp)))
+       (lambda (line)
+         (unless (irregex-search
+                  (if use-sre?
+                      (with-input-from-string pattern read)
+                      pattern)
+                  line)
+           (print line)))))))

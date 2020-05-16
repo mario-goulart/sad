@@ -34,27 +34,24 @@
              (pathname-file (program-name)))
     (fprintf out "\n<command>s are:\n")
     (for-each (lambda (command)
-                (fprintf out "~a\n" command))
-              (sort (map (compose symbol->string car) (get-commands))
-                     string<))
+                (fprintf out "\n~a\n" (command-help (get-command command))))
+              (map string->symbol
+                   (sort (map (compose symbol->string car) (get-commands))
+                         string<)))
     (when exit-code
       (exit exit-code))))
 
-(let* ((args (parse-command-line
-              (command-line-arguments)
-              `(((-h -help --help))
-                (--))))
-       (command (alist-ref '-- args)))
+(let ((args (command-line-arguments)))
 
-  (when (alist-ref '-h args)
-    (usage 0))
-
-  (when (null? command)
+  (when (null? args)
     (usage 1))
 
-  (or (and-let* ((cmd (string->symbol (car command)))
+  (when (member (car args) '("-h" "-help" "--help"))
+    (usage 0))
+
+  (or (and-let* ((cmd (string->symbol (car args)))
                  (handler (alist-ref cmd (get-commands))))
-        (apply (command-proc handler) (cdr command)))
-      (die! "Invalid command: ~a" (car command))))
+        (apply (command-proc handler) (cdr args)))
+      (die! "Invalid command: ~a" (car args))))
 
 ) ;; end module
