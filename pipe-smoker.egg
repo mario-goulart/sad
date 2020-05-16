@@ -1,0 +1,9 @@
+;; -*- scheme -*-
+
+((synopsis "A tool for command line stream processing")
+ (author "Mario Domenech Goulart")
+ (category tools)
+ (license "BSD")
+ (dependencies slice srfi-1 srfi-13)
+ (components
+  (program pipe-smoker (install-name :))))

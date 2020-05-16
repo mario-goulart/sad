@@ -1,4 +1,8 @@
+(module pipe-smoker ()
+
+(import scheme)
 (import (chicken base)
+        (chicken condition)
         (chicken io)
         (chicken irregex)
         (chicken format)
@@ -26,7 +30,6 @@
   (fprintf (current-error-port)
            (apply sprintf (cons (string-append fmt "\n") args)))
   (exit 1))
-
 
 (define (for-each-line proc)
   (let loop ()
@@ -59,3 +62,5 @@
                  (handler (alist-ref cmd *commands*)))
         (apply (command-proc handler) (cdr args)))
       (error "Invalid command: " (car args))))
+
+) ;; end module
