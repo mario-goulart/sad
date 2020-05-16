@@ -5,7 +5,9 @@
         (chicken condition)
         (chicken io)
         (chicken irregex)
+        (chicken file)
         (chicken format)
+        (chicken pathname)
         (chicken port)
         (chicken process-context)
         (chicken string))
@@ -56,6 +58,11 @@
 (include "commands/remove.scm")
 (include "commands/filter.scm")
 (include "commands/slurp.scm")
+
+(let ((user-conf
+       (make-pathname (get-environment-variable "HOME") ".pipe-smoker.conf")))
+  (when (file-exists? user-conf)
+    (load user-conf)))
 
 (let ((args (command-line-arguments)))
   (or (and-let* ((cmd (string->symbol (car args)))
