@@ -1,17 +1,22 @@
-(module pipe-smoker ()
+(module pipe-smoker
+
+(define-command
+ get-commands
+ command-name
+ command-help
+ command-proc
+ for-each-line
+ for-each-sexp
+ list-ref*
+ die!
+ )
 
 (import scheme)
 (import (chicken base)
         (chicken condition)
-        (chicken io)
-        (chicken irregex)
-        (chicken file)
         (chicken format)
-        (chicken pathname)
-        (chicken port)
-        (chicken process-context)
-        (chicken string))
-(import srfi-1 srfi-13 slice)
+        (chicken io)
+        (chicken port))
 
 (define *commands* '())
 
@@ -21,6 +26,9 @@
   (set! *commands*
     (cons (cons name (make-command name help proc))
           *commands*)))
+
+(define (get-commands)
+  *commands*)
 
 (define (read-stdin-line)
   (with-input-from-port (current-input-port) read-line))
@@ -51,23 +59,5 @@
   (handle-exceptions exn
     ""
     (list-ref lst idx)))
-
-(include "commands/slice.scm")
-(include "commands/format.scm")
-(include "commands/eval.scm")
-(include "commands/remove.scm")
-(include "commands/filter.scm")
-(include "commands/slurp.scm")
-
-(let ((user-conf
-       (make-pathname (get-environment-variable "HOME") ".pipe-smoker.conf")))
-  (when (file-exists? user-conf)
-    (load user-conf)))
-
-(let ((args (command-line-arguments)))
-  (or (and-let* ((cmd (string->symbol (car args)))
-                 (handler (alist-ref cmd *commands*)))
-        (apply (command-proc handler) (cdr args)))
-      (error "Invalid command: " (car args))))
 
 ) ;; end module
