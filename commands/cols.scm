@@ -1,4 +1,4 @@
-(define-command 'slice "Slice the input"
+(define-command 'cols "Select columns"
   (lambda args
     (let ((ranges '())
           (read-sexp? #f)
@@ -15,20 +15,20 @@
                    (loop (cdr args)))
                   ((equal? arg "-s")
                    (when (null? (cdr args))
-                     (die! "slice: -s requires an argument"))
+                     (die! "cols: -s requires an argument"))
                    (set! sep (cadr args))
                    (loop (cddr args)))
                   (else
                    (let ((range (map string->number (string-split arg ":"))))
                      (unless (every integer? range)
-                       (die! "slice: invalid range: ~a" arg))
+                       (die! "cols: invalid range: ~a" arg))
                      (set! ranges (cons
                                    (cons (and (substring-index ":" arg) #t)
                                          range)
                                    ranges))
                      (loop (cdr args))))))))
       (when (null? ranges)
-        (die! "slice: missing slice specification"))
+        (die! "cols: missing columns specification"))
       (set! ranges (reverse ranges))
       (let ((iterator (if read-sexp? for-each-sexp for-each-line)))
         (iterator

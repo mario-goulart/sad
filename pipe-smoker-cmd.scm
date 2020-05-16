@@ -13,7 +13,7 @@
 (import pipe-smoker)
 (import srfi-1 srfi-13 slice)
 
-(include "commands/slice.scm")
+(include "commands/cols.scm")
 (include "commands/format.scm")
 (include "commands/eval.scm")
 (include "commands/remove.scm")
