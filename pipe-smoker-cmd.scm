@@ -14,12 +14,12 @@
 (import pipe-smoker)
 (import optimism srfi-1 srfi-13 slice)
 
+(include "commands/buffer.scm")
 (include "commands/cols.scm")
 (include "commands/format.scm")
 (include "commands/eval.scm")
 (include "commands/remove.scm")
 (include "commands/filter.scm")
-(include "commands/slurp.scm")
 
 (let ((user-conf
        (make-pathname (get-environment-variable "HOME") ".pipe-smoker.conf")))

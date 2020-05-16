@@ -49,24 +49,30 @@
            (apply sprintf (cons (string-append fmt "\n") args)))
   (exit 1))
 
-(define (for-each-line proc)
+(define (for-each-line proc #!key finalizer)
   (let loop ()
     (let ((line (read-stdin-line)))
-      (unless (eof-object? line)
-        (proc line)
-        (loop)))))
+      (if (eof-object? line)
+          (when finalizer
+            (finalizer))
+          (begin
+            (proc line)
+            (loop))))))
 
-(define (for-each-sexp proc)
+(define (for-each-sexp proc #!key finalizer)
   (let loop ()
     (let ((sexp (read-stdin-sexp)))
-      (unless (eof-object? sexp)
-        (proc sexp)
-        (loop)))))
+      (if (eof-object? sexp)
+          (when finalizer
+            (finalizer))
+          (begin
+            (proc sexp)
+            (loop))))))
 
-(define (input-iterator input-is-sexp? sexp-handler line-handler)
+(define (input-iterator input-is-sexp? sexp-handler line-handler #!key finalizer)
   (if input-is-sexp?
-      (for-each-sexp sexp-handler)
-      (for-each-line line-handler)))
+      (for-each-sexp sexp-handler finalizer: finalizer)
+      (for-each-line line-handler finalizer: finalizer)))
 
 (define (list-ref* lst idx)
   (handle-exceptions exn
