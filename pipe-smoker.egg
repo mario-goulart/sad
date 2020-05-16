@@ -4,7 +4,7 @@
  (author "Mario Domenech Goulart")
  (category tools)
  (license "BSD")
- (dependencies big-chicken slice srfi-1 srfi-13)
+ (dependencies big-chicken optimism slice srfi-1 srfi-13)
  (components
   (extension pipe-smoker)
   (program pipe-smoker-cmd
