@@ -40,6 +40,8 @@
            (let ((new-bindings
                   (eval `(let* ((INPUT (quote ,line-or-sexp))
                                 ,@bindings)
-                           (begin ,@(with-input-from-string exp read-list))
+                           (begin
+                             (import big-chicken)
+                             ,@(with-input-from-string exp read-list))
                            (list ,@(map car bindings))))))
              (set! bindings (map list (map car bindings) new-bindings)))))))))
