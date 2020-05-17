@@ -188,14 +188,18 @@
       (slice lst (range-from range) (range-to range))))
 
 (define (eval-scheme exp bindings input lineno)
-  (let ((new-bindings
+  ;; Return a pair whose car is the value produced by the evaluation
+  ;; of `exp' and cdr is an alist representing the new bindings.
+  (let ((res/new-bindings
          (eval `(let* ((INPUT (quote ,input))
                        (LINENO (quote ,lineno))
                        ,@bindings)
-                  (begin
-                    (import big-chicken)
-                    ,@(with-input-from-string exp read-list))
-                  (list ,@(map car bindings))))))
-    (map list (map car bindings) new-bindings)))
+                  (cons
+                   (begin
+                     (import big-chicken)
+                     ,@(with-input-from-string exp read-list))
+                   (list ,@(map car bindings)))))))
+    (cons (car res/new-bindings)
+          (map list (map car bindings) (cdr res/new-bindings)))))
 
 ) ;; end module

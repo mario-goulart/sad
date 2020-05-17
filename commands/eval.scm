@@ -38,4 +38,5 @@ eval <options> <exp>
       (let ((iterator (if read-sexp? for-each-sexp for-each-line)))
         (iterator
          (lambda (line-or-sexp lineno)
-           (set! bindings (eval-scheme exp bindings line-or-sexp lineno))))))))
+           (set! bindings
+                 (cdr (eval-scheme exp bindings line-or-sexp lineno)))))))))
