@@ -19,6 +19,7 @@
  range-to
  ranges-maximum-to
  list-slice
+ eval-scheme
  )
 
 (import scheme)
@@ -185,5 +186,16 @@
            (list-ref* (reverse lst) (abs (+ range 1)))
            (list-ref* lst range)))
       (slice lst (range-from range) (range-to range))))
+
+(define (eval-scheme exp bindings input lineno)
+  (let ((new-bindings
+         (eval `(let* ((INPUT (quote ,input))
+                       (LINENO (quote ,lineno))
+                       ,@bindings)
+                  (begin
+                    (import big-chicken)
+                    ,@(with-input-from-string exp read-list))
+                  (list ,@(map car bindings))))))
+    (map list (map car bindings) new-bindings)))
 
 ) ;; end module
