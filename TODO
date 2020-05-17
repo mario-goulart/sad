@@ -6,7 +6,6 @@
 
 ## New params
 
-* lines --delete
 * cols: when sep is "", operate on chars
 
 

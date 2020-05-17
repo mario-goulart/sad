@@ -18,6 +18,8 @@
  range-from
  range-to
  ranges-maximum-to
+ ranges-minimum-from
+ in-range?
  list-slice
  eval-scheme
  )
@@ -172,12 +174,42 @@
                   (and (range-from range) (negative? (range-from range)))
                   (and (range-to range) (negative? (range-to range))))
               (set! max-to #f))
-             ((> (range-from range) max-to)
-              (set! max-to (range-from range)))
              ((> (range-to range) max-to)
               (set! max-to (range-to range)))))
      ranges)
     max-to))
+
+(define (ranges-minimum-from ranges)
+  ;; Return #f in case any of the ranges imply requiring the full
+  ;; sequence
+  (let loop ((min-from 9999999999999999999999999999) ;; FIXME
+             (ranges ranges))
+    (if (null? ranges)
+        min-from
+        (let ((range (car ranges)))
+          (if (number? range)
+              (if (negative? range)
+                  #f
+                  (loop (if (< range min-from)
+                            range
+                            min-from)
+                        (cdr ranges)))
+              (let ((from (range-from range)))
+                (if (negative? from)
+                    #f
+                    (loop (if (< (or from 0) min-from)
+                              from
+                              min-from)
+                          (cdr ranges)))))))))
+
+(define (in-range? num range max-to)
+  (if (number? range)
+      (= num range)
+      ;; slow but simple
+      (and (memq num (slice (iota max-to)
+                            (or (range-from range) 0)
+                            (or (range-to range) max-to)))
+           #t)))
 
 (define (list-slice lst range)
   (if (number? range)
