@@ -29,24 +29,12 @@ cols [<options>] <range> [<range> ...]
            (read-sexp? (get-opt '(--read-sexp -r) args flag?: #t))
            (write-sexp? (get-opt '(--write-sexp -w) args flag?: #t))
            (sep (or (get-opt '(--sep -s) args) " \t"))
-           (ranges% (get-opt '(--) args))
-           (ranges '()))
+           (ranges (parse-ranges 'cols (get-opt '(--) args))))
 
       (handle-command-help 'cols args)
 
-      (when (null? ranges%)
+      (when (null? ranges)
         (die! "cols: missing columns specification"))
-
-      (for-each
-       (lambda (r)
-         (let ((range (map string->number (string-split r ":"))))
-           (unless (every integer? range)
-             (die! "cols: invalid range: ~a" range))
-           (set! ranges (cons
-                         (cons (and (substring-index ":" r) #t)
-                               range)
-                         ranges))))
-       ranges%)
 
       (let ((iterator (if read-sexp? for-each-sexp for-each-line)))
         (iterator
@@ -56,13 +44,7 @@ cols [<options>] <range> [<range> ...]
                              (string-split line-or-sexp sep)))
                   (slices
                    (map (lambda (range)
-                          (if (car range)
-                              (apply slice (cons items (cdr range)))
-                              (let ((idx (cadr range)))
-                                (list
-                                 (if (< idx 0)
-                                     (list-ref* (reverse items) (abs (+ idx 1)))
-                                     (list-ref* items idx))))))
+                          (apply list-slice (list items range)))
                         ranges)))
              (if write-sexp?
                  (write (car slices))
