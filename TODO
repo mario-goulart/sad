@@ -1,0 +1,17 @@
+## New commands:
+
+* replace
+* sort
+
+
+## New params
+
+* lines --delete
+* filter --delete
+* cols: when sep is "", operate on chars
+
+
+## Misc
+* use utf8 and slice-utf8
+* remove format?
+* -R: modules to be loaded by eval
