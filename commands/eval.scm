@@ -35,9 +35,7 @@ eval <options> <exp>
       (unless exp
         (die! "eval: missing expression"))
 
-      (let ((iterator (if read-sexp? for-each-sexp for-each-line))
-            (lineno -1))
+      (let ((iterator (if read-sexp? for-each-sexp for-each-line)))
         (iterator
-         (lambda (line-or-sexp)
-           (set! lineno (add1 lineno))
+         (lambda (line-or-sexp lineno)
            (set! bindings (eval-scheme exp bindings line-or-sexp lineno))))))))

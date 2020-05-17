@@ -28,7 +28,7 @@ format [<options>] <format>
         (die! "format: missing format specification"))
 
       (for-each-line
-       (lambda (line)
+       (lambda (line lineno)
          (let ((tokens (string-split line sep))
                (str format))
            (for-each

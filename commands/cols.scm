@@ -38,7 +38,7 @@ cols [<options>] <range> [<range> ...]
 
       (let ((iterator (if read-sexp? for-each-sexp for-each-line)))
         (iterator
-         (lambda (line-or-sexp)
+         (lambda (line-or-sexp lineno)
            (let* ((items (if read-sexp?
                              line-or-sexp
                              (string-split line-or-sexp sep)))

@@ -28,7 +28,6 @@ lines <range> [<range> ...]
         (die! "lines: missing range specification"))
 
       (let* ((iterator (if read-sexp? for-each-sexp for-each-line))
-             (lineno -1)
              (read-until (ranges-maximum-to ranges))
              (dump-called? #f)
              (dump!
@@ -41,8 +40,7 @@ lines <range> [<range> ...]
                        (for-each print (apply list-slice (list buffer range))))
                      ranges))))))
         (iterator
-         (lambda (line-or-sexp)
-           (set! lineno (add1 lineno))
+         (lambda (line-or-sexp lineno)
            (if (or (not read-until) (<= lineno read-until))
                (set! buffer (cons line-or-sexp buffer))
                (dump!)))

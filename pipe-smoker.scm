@@ -58,24 +58,24 @@
   (exit 1))
 
 (define (for-each-line proc #!key finalizer)
-  (let loop ()
+  (let loop ((lineno 0))
     (let ((line (read-stdin-line)))
       (if (eof-object? line)
           (when finalizer
             (finalizer))
           (begin
-            (proc line)
-            (loop))))))
+            (proc line lineno)
+            (loop (add1 lineno)))))))
 
 (define (for-each-sexp proc #!key finalizer)
-  (let loop ()
+  (let loop ((lineno 0))
     (let ((sexp (read-stdin-sexp)))
       (if (eof-object? sexp)
           (when finalizer
             (finalizer))
           (begin
-            (proc sexp)
-            (loop))))))
+            (proc sexp lineno)
+            (loop (add1 lineno)))))))
 
 (define (input-iterator input-is-sexp? sexp-handler line-handler #!key finalizer)
   (if input-is-sexp?

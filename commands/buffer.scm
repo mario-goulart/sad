@@ -26,7 +26,7 @@ buffer [<options>] [<number of lines>]
       (let ((lines '())
             (lineno 0))
         (for-each-line
-         (lambda (line)
+         (lambda (line _)
            (cond ((and num-lines (< (sub1 num-lines) lineno))
                   (write (reverse lines))
                   (set! lineno 1)

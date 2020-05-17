@@ -28,11 +28,11 @@ remove [<options>] <pattern>
 
       (input-iterator
        read-sexp?
-       (lambda (sexp)
+       (lambda (sexp lineno)
          (unless (eval `(let ((INPUT ,sexp))
                           (begin ,@(with-input-from-string pattern read-list))))
            (print sexp)))
-       (lambda (line)
+       (lambda (line lineno)
          (unless (irregex-search
                   (if use-sre?
                       (with-input-from-string pattern read)

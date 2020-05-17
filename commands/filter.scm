@@ -41,14 +41,14 @@ filter [<options>] <pattern>
       (let ((matches -1))
         (input-iterator
          read-sexp?
-         (lambda (sexp)
+         (lambda (sexp lineno)
            (when (eval `(let ((INPUT ,sexp))
                           (begin ,@(with-input-from-string pattern read-list))))
              (set! matches (add1 matches))
              (when (and stop-after-matches (= matches stop-after-matches))
                (exit 0))
              (print sexp)))
-       (lambda (line)
+       (lambda (line lineno)
          (when (irregex-search
                 (if use-sre?
                     (with-input-from-string pattern read)
