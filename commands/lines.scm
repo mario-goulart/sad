@@ -1,7 +1,6 @@
 (define-command 'lines
   "\
 lines <range> [<range> ...]
-
   Select lines by number or range.  Syntax of ranges:
   * `<number>': a single line whose index is <number>
   * `:<number>': lines from 0 to <number>

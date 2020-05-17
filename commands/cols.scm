@@ -1,7 +1,6 @@
 (define-command 'cols
   "\
 cols [<options>] <range> [<range> ...]
-
   Select columns based on ranges.  Syntax of ranges:
   * `<number>': a single column whose index is <number>
   * `:<number>': columns from 0 to <number>

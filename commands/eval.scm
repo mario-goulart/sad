@@ -1,7 +1,6 @@
 (define-command 'eval
   "\
 eval <options> <exp>
-
   Evaluate the Scheme expression <exp>.  The `INPUT' and `LINENO'
   variables are bound to the given input and to the line number in the
   evaluation context, respectively.  <exp> is implicitly placed in a

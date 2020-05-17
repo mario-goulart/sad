@@ -1,7 +1,6 @@
 (define-command 'format
   "\
 format [<options>] <format>
-
   Format tokens of the input split by a separator using a format
   string (<format>).  References to tokens in the the format string
   follow the `{<number>}' syntax, where <number> is the index of the
