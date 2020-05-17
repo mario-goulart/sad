@@ -19,6 +19,7 @@
 (include "commands/eval.scm")
 (include "commands/filter.scm")
 (include "commands/format.scm")
+(include "commands/lines.scm")
 (include "commands/remove.scm")
 
 (let ((user-conf
