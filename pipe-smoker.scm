@@ -13,6 +13,12 @@
  list-ref*
  die!
  get-opt
+ parse-ranges
+ range?
+ range-from
+ range-to
+ ranges-maximum-to
+ list-slice
  )
 
 (import scheme)
@@ -20,8 +26,9 @@
         (chicken condition)
         (chicken format)
         (chicken io)
+        (chicken irregex)
         (chicken port))
-(import srfi-1)
+(import slice srfi-1)
 
 (define *commands* '())
 
@@ -102,5 +109,81 @@
          (any (lambda (opt)
                 (alist-ref opt parsed-args))
               options))))
+
+(define-record range from to)
+
+(define-record-printer (range obj out)
+  (fprintf out "~a:~a"
+           (or (range-from obj) "")
+           (or (range-to obj) "")))
+
+(define (parse-ranges caller ranges #!key (sep ":"))
+  (let loop ((ranges ranges))
+    (if (null? ranges)
+        '()
+        (let ((range (car ranges)))
+          (cond
+           ;; "<number>"
+           ((irregex-match '(: (* "-") (+ numeric)) range)
+            (cons (string->number range)
+                  (loop (cdr ranges))))
+
+           ;; "<number>:<number>"
+           ((irregex-match
+             `(: (submatch-named from (* "-") (+ numeric)) ,sep
+                 (submatch-named to (* "-") (+ numeric)))
+             range)
+            => (lambda (m)
+                 (cons (make-range (string->number (irregex-match-substring m 'from))
+                                   (string->number (irregex-match-substring m 'to)))
+                       (loop (cdr ranges)))))
+
+           ;; ":<number>"
+           ((irregex-match
+             `(: ,sep (submatch-named to (* "-") (+ numeric)))
+             range)
+            => (lambda (m)
+                 (cons (make-range #f (string->number (irregex-match-substring m 'to)))
+                       (loop (cdr ranges)))))
+
+           ;; "<number>:"
+           ((irregex-match
+             `(: (submatch-named from (* "-") (+ numeric)) ,sep)
+             range)
+            => (lambda (m)
+                 (cons (make-range (string->number (irregex-match-substring m 'from)) #f)
+                       (loop (cdr ranges)))))
+
+           (else (die! "~a: invalid range: ~a" caller range)))))))
+
+(define (ranges-maximum-to ranges)
+  ;; Return #f in case any of the ranges imply requiring the full
+  ;; sequence
+  (let ((max-to 0))
+    (for-each
+     (lambda (range)
+       (cond ((number? range)
+              (if (negative? range)
+                  (set! max-to #f)
+                  (when (> range max-to)
+                    (set! max-to range))))
+             ((or (not (range-to range))
+                  (and (range-from range) (negative? (range-from range)))
+                  (and (range-to range) (negative? (range-to range))))
+              (set! max-to #f))
+             ((> (range-from range) max-to)
+              (set! max-to (range-from range)))
+             ((> (range-to range) max-to)
+              (set! max-to (range-to range)))))
+     ranges)
+    max-to))
+
+(define (list-slice lst range)
+  (if (number? range)
+      (list
+       (if (< range 0)
+           (list-ref* (reverse lst) (abs (+ range 1)))
+           (list-ref* lst range)))
+      (slice lst (range-from range) (range-to range))))
 
 ) ;; end module
