@@ -17,7 +17,7 @@
 (include "commands/buffer.scm")
 (include "commands/cols.scm")
 (include "commands/eval.scm")
-(include "commands/filters.scm")
+(include "commands/filter.scm")
 (include "commands/format.scm")
 (include "commands/lines.scm")
 
