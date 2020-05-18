@@ -9,7 +9,7 @@ cols [<options>] <range> [<range> ...]
 
   <options>:
     --sep | -s
-      String used to separate tokens (given to `string-split').
+      Characters used to separate tokens (given to `string-split').
 
     --read-sexp | -r
       Assume inputs are sexps.
