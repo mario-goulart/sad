@@ -22,7 +22,6 @@ eval <options> <exp>
                      ,string->symbol
                      ,(lambda (x) (with-input-from-string x read)))
                     ((--read-sexp -r))
-                    ((--sep -s) . separator)
                     )))
            (read-sexp? (get-opt '(--read-sexp -r) args flag?: #t))
            (bindings (get-opt '(--bind -b) args multiple?: #t))
