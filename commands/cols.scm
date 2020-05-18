@@ -14,7 +14,7 @@ cols [<options>] <range> [<range> ...]
     --delete | -d
       Delete columns in the given ranges.
 
-    --sep | -s
+    --separator | -s
       Characters used to separate tokens (given to `string-split').
 
     --joiner | -j
@@ -42,12 +42,12 @@ cols [<options>] <range> [<range> ...]
                     ((--sre -S))
                     ((--read-sexp -r))
                     ((--write-sexp -w))
-                    ((--sep -s) . separator)
+                    ((--separator -s) . separator)
                     ((--joiner -j) . joiner)
                     )))
            (read-sexp? (get-opt '(--read-sexp -r) args flag?: #t))
            (write-sexp? (get-opt '(--write-sexp -w) args flag?: #t))
-           (sep (or (get-opt '(--sep -s) args) " \t"))
+           (sep (or (get-opt '(--separator -s) args) " \t"))
            (joiner (or (get-opt '(--joiner -j) args) " "))
            (pattern (get-opt '(--pattern -p) args))
            (delete? (get-opt '(--delete -d) args flag?: #t))

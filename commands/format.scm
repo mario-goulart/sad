@@ -8,16 +8,16 @@ format [<options>] <format>
   separator.
 
   <options>:
-    --sep | -s
+    --separator | -s
       String used to separate tokens (given to `string-split').
 "
   (lambda args*
     (let* ((args (parse-command-line
                   args*
                   '(((--help -help -h))
-                    ((--sep -s) . separator)
+                    ((--separator -s) . separator)
                     )))
-           (sep (or (get-opt '(--sep -s) args) " \t"))
+           (sep (or (get-opt '(--separator -s) args) " \t"))
            (format (and-let* ((f (get-opt '(--) args)))
                      (and (not (null? f)) (car f)))))
 
