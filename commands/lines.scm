@@ -9,7 +9,7 @@ lines <range> [<range> ...]
 
   <options>:
     --delete | -d
-      Delete the liness in the given ranges.
+      Delete the lines in the given ranges.
 
     --read-sexp | -r
       Assume inputs are sexps.
