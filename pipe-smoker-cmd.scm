@@ -20,6 +20,7 @@
 (include "commands/filter.scm")
 (include "commands/format.scm")
 (include "commands/lines.scm")
+(include "commands/replace.scm")
 
 (let ((user-conf
        (make-pathname (get-environment-variable "HOME") ".pipe-smoker.conf")))
