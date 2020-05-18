@@ -14,14 +14,14 @@ cols [<options>] <range> [<range> ...]
     --delete | -d
       Delete columns in the given ranges.
 
-    --separator | -s
+    --separator | -s <separator>
       Characters used to separate tokens (given to `string-split').
 
-    --joiner | -j
+    --joiner | -j <joiner>
       String used to put between columns when printing them after filtering
       on ranges (except when --write-sexp is used).  Default is a space.
 
-    --pattern | -p
+    --pattern | -p <pattern>
       Regular expression to be used to split columns.
 
     --sre | -S

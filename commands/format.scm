@@ -8,7 +8,7 @@ format [<options>] <format>
   separator.
 
   <options>:
-    --separator | -s
+    --separator | -s <separator>
       String used to separate tokens (given to `string-split').
 "
   (lambda args*
