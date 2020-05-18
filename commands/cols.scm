@@ -11,12 +11,18 @@ cols [<options>] <range> [<range> ...]
   Negative indexes are supported.
 
   <options>:
+    --delete | -d
+      Delete columns in the given ranges.
+
     --sep | -s
       Characters used to separate tokens (given to `string-split').
 
+    --joiner | -j
+      String used to put between columns when printing them after filtering
+      on ranges (except when --write-sexp is used).  Default is a space.
+
     --pattern | -p
-      Regular expression to be used to split columns.  --pattern and --sep
-      are mutually exclusive.
+      Regular expression to be used to split columns.
 
     --sre | -S
       Indicate that the argument to --pattern is an SRE.
@@ -31,27 +37,27 @@ cols [<options>] <range> [<range> ...]
     (let* ((args (parse-command-line
                   args*
                   '(((--help -help -h))
+                    ((--delete -d))
                     ((--pattern -p) . pattern)
                     ((--sre -S))
                     ((--read-sexp -r))
                     ((--write-sexp -w))
                     ((--sep -s) . separator)
+                    ((--joiner -j) . joiner)
                     )))
            (read-sexp? (get-opt '(--read-sexp -r) args flag?: #t))
            (write-sexp? (get-opt '(--write-sexp -w) args flag?: #t))
-           (sep (get-opt '(--sep -s) args))
+           (sep (or (get-opt '(--sep -s) args) " \t"))
+           (joiner (or (get-opt '(--joiner -j) args) " "))
            (pattern (get-opt '(--pattern -p) args))
+           (delete? (get-opt '(--delete -d) args flag?: #t))
            (use-sre? (get-opt '(--sre -S) args flag?: #t))
-           (ranges (parse-ranges 'cols (get-opt '(--) args)))
-           (default-sep " \t"))
+           (ranges (parse-ranges 'cols (get-opt '(--) args))))
 
       (handle-command-help 'cols args)
 
       (when (null? ranges)
         (die! "cols: missing columns specification."))
-
-      (when (and sep pattern)
-        (die! "cols: --sep and --pattern are mutually exclusive."))
 
       (when (and use-sre? (not pattern))
         (die! "cols: --sre requires --pattern."))
@@ -68,15 +74,27 @@ cols [<options>] <range> [<range> ...]
                                 (with-input-from-string pattern read)
                                 pattern)
                             line-or-sexp)
-                           (string-split line-or-sexp (or sep default-sep)))))
+                           (string-split line-or-sexp sep))))
                   (slices
-                   (map (lambda (range)
-                          (apply list-slice (list items range)))
-                        ranges)))
+                   (if delete?
+                       (let ((len (length items)))
+                         (let loop ((cols items) (col-idx 0))
+                           (if (null? cols)
+                               '()
+                               (let ((col (car cols)))
+                                 (if (any (lambda (range)
+                                            (in-range? col-idx range len))
+                                          ranges)
+                                     (loop (cdr cols) (add1 col-idx))
+                                     (cons (list col) (loop (cdr cols) (add1 col-idx))))))))
+                       (map (lambda (range)
+                              (apply list-slice (list items range)))
+                            ranges))))
              (if write-sexp?
                  (write (car slices))
                  (print
                   (string-intersperse
                    (map (lambda (s)
                           (string-intersperse (map ->string s)))
-                        slices)))))))))))
+                        slices)
+                   joiner))))))))))
