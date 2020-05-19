@@ -13,6 +13,19 @@ filter [<options>] <pattern>
     Lines that cause the evaluation of <pattern> to return non-#f
     are preserved (or deleted, if --delete is used).
 
+  --bind | -b <variable> <value>
+    Bind <variable> to <value> in the execution context of <pattern>.
+    (when --eval is given). This parameter may be provided multiple times.
+
+  --require-extension | -R <extension>
+    Import a CHICKEN extension.  By default, big-chicken is imported.
+    This parameter may be provided multiple times and only makes sense
+    when --eval is used.
+
+  --finalizer | -f <exp>
+    Scheme expression to be evaluated after the whole input has been
+    consumed.
+
   --read-sexp | -r
     Assume inputs are sexps.  Implies --eval.
 
@@ -28,9 +41,14 @@ filter [<options>] <pattern>
   (lambda args*
     (let* ((args (parse-command-line
                   args*
-                  '(((--help -help -h))
+                  `(((--help -help -h))
                     ((--delete -d))
                     ((--eval -e))
+                    ((--bind -b)
+                     ,string->symbol
+                     ,(lambda (x) (with-input-from-string x read)))
+                    ((--require-extension -R) . ,string->symbol)
+                    ((--finalizer -f) . finalizer)
                     ((--read-sexp -r))
                     ((--write-sexp -w))
                     ((--stop-after-matches -n) . matches)
@@ -40,6 +58,10 @@ filter [<options>] <pattern>
            (write-sexp? (get-opt '(--write-sexp -w) args flag?: #t))
            (use-sre? (get-opt '(--sre -S) args flag?: #t))
            (use-eval? (get-opt '(--eval -e) args flag?: #t))
+           (bindings (get-opt '(--bind -b) args multiple?: #t))
+           (extensions
+            (or (get-opt '(--require-extension -R) args multiple?: #t) '()))
+           (finalizer (get-opt '(--finalizer -f) args))
            (stop-after-matches (get-opt '(--stop-after-matches -n) args))
            (pattern (and-let* ((p (get-opt '(--) args)))
                       (and (not (null? p)) (car p)))))
@@ -65,17 +87,22 @@ filter [<options>] <pattern>
                 (set! matches (add1 matches))
                 (when (and stop-after-matches (>= matches stop-after-matches))
                   (exit 0))
-                ((if write-sexp? write print) line-or-sexp))))
+                ((if write-sexp? write print) line-or-sexp)))
+             (evaluator
+              (lambda (line-or-sexp lineno)
+                (let ((res/bindings
+                       (eval-scheme
+                        pattern bindings extensions line-or-sexp lineno)))
+                  (set! bindings (cdr res/bindings))
+                  (car res/bindings)))))
         (input-iterator
          read-sexp?
          (lambda (sexp lineno)
-           (when ((if delete? not identity)
-                  (car (eval-scheme pattern '() '() sexp lineno)))
+           (when ((if delete? not identity) (evaluator sexp lineno))
              (maybe-stop sexp)))
          (lambda (line lineno)
            (if use-eval?
-               (when ((if delete? not identity)
-                      (car (eval-scheme pattern '() '() line lineno)))
+               (when ((if delete? not identity) (evaluator line lineno))
                  (maybe-stop line))
                (when ((if delete? not identity)
                       (irregex-search
@@ -83,4 +110,7 @@ filter [<options>] <pattern>
                            (with-input-from-string pattern read)
                            pattern)
                        line))
-                 (maybe-stop (if write-sexp? (list line) line))))))))))
+                 (maybe-stop (if write-sexp? (list line) line)))))
+         finalizer:  (and finalizer
+                          (lambda (lineno)
+                            (eval-scheme finalizer bindings extensions "" lineno))))))))
