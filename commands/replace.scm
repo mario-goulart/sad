@@ -3,12 +3,12 @@
 replace [<options>] <pattern> <replacement>
   Replace strings matching <pattern> with <replacement> in the input.
 
-<options>:
-  --sre | -S
-    Indicate that <pattern> uses SRE syntax.
+  <options>:
+    --sre | -S
+      Indicate that <pattern> uses SRE syntax.
 
-  --all | -a
-    Replace all occurrences of <pattern>
+    --all | -a
+      Replace all occurrences of <pattern>
 "
   (lambda args*
     (let* ((args (parse-command-line
