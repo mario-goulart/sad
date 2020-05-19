@@ -1,4 +1,4 @@
-(module pipe-smoker-cmd ()
+(module leak-cmd ()
 
 (import scheme)
 (import (chicken base)
@@ -11,7 +11,7 @@
         (chicken process-context)
         (chicken sort)
         (chicken string))
-(import pipe-smoker)
+(import leak)
 (import optimism srfi-1 srfi-13 slice) ;; FIXME: remove slice?
 
 (include "commands/buffer.scm")
@@ -23,7 +23,7 @@
 (include "commands/replace.scm")
 
 (let ((user-conf
-       (make-pathname (get-environment-variable "HOME") ".pipe-smoker.conf")))
+       (make-pathname (get-environment-variable "HOME") ".leak.conf")))
   (when (file-exists? user-conf)
     (load user-conf)))
 

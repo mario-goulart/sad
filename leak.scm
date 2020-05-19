@@ -1,4 +1,4 @@
-(module pipe-smoker
+(module leak
 
 (define-command
  get-command
