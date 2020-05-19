@@ -5,39 +5,40 @@ filter [<options>] <pattern>
   expression when --eval or --read-sexp is given).
 
   <options>:
-  --delete | -e
-    Delete lines that match <pattern>.
+    --delete | -e
+      Delete lines that match <pattern>.
 
-  --eval | -e
-    Indicate that <pattern> is a Scheme expression to be evaluated.
-    Lines that cause the evaluation of <pattern> to return non-#f
-    are preserved (or deleted, if --delete is used).
+    --eval | -e
+      Indicate that <pattern> is a Scheme expression to be evaluated.
+      Lines that cause the evaluation of <pattern> to return non-#f
+      are preserved (or deleted, if --delete is used).
 
-  --bind | -b <variable> <value>
-    Bind <variable> to <value> in the execution context of <pattern>.
-    (when --eval is given). This parameter may be provided multiple times.
+    --bind | -b <variable> <value>
+      Bind <variable> to <value> in the execution context of <pattern>.
+      (when --eval is given). This parameter may be provided multiple
+      times.
 
-  --require-extension | -R <extension>
-    Import a CHICKEN extension.  By default, big-chicken is imported.
-    This parameter may be provided multiple times and only makes sense
-    when --eval is used.
+    --require-extension | -R <extension>
+      Import a CHICKEN extension.  By default, big-chicken is imported.
+      This parameter may be provided multiple times and only makes sense
+      when --eval is used.
 
-  --finalizer | -f <exp>
-    Scheme expression to be evaluated after the whole input has been
-    consumed.
+    --finalizer | -f <exp>
+      Scheme expression to be evaluated after the whole input has been
+      consumed.
 
-  --read-sexp | -r
-    Assume inputs are sexps.  Implies --eval.
+    --read-sexp | -r
+      Assume inputs are sexps.  Implies --eval.
 
-  --write-sexp | -w
-    Write sexps.
+    --write-sexp | -w
+      Write sexps.
 
-  --sre | -S
-    Indicate that <pattern> uses SRE syntax.
+    --sre | -S
+      Indicate that <pattern> uses SRE syntax.
 
-  --stop-after-matches | -n <num matches>
-    Stop after reaching any matches.
-"
+    --stop-after-matches | -n <num matches>
+      Stop after reaching any matches.
+  "
   (lambda args*
     (let* ((args (parse-command-line
                   args*
