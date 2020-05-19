@@ -10,9 +10,14 @@ eval <options> <exp>
   <options>:
     --bind | -b <variable> <value>
       Bind <variable> to <value> in the execution context of <exp>.
+      This parameter may be provided multiple times.
 
     --read-sexp | -r
       Assume inputs are sexps.
+
+    --require-extension | -R <extension>
+      Import a CHICKEN extension.  By default, big-chicken is imported.
+      This parameter may be provided multiple times.
 "
   (lambda args*
     (let* ((args (parse-command-line
@@ -21,10 +26,13 @@ eval <options> <exp>
                     ((--bind -b)
                      ,string->symbol
                      ,(lambda (x) (with-input-from-string x read)))
+                    ((--require-extension -R) . ,string->symbol)
                     ((--read-sexp -r))
                     )))
            (read-sexp? (get-opt '(--read-sexp -r) args flag?: #t))
            (bindings (get-opt '(--bind -b) args multiple?: #t))
+           (extensions
+            (or (get-opt '(--require-extension -R) args multiple?: #t) '()))
            (exp (and-let* ((e (get-opt '(--) args)))
                   (and (not (null? e)) (car e)))))
 
@@ -37,4 +45,4 @@ eval <options> <exp>
         (iterator
          (lambda (line-or-sexp lineno)
            (set! bindings
-                 (cdr (eval-scheme exp bindings line-or-sexp lineno)))))))))
+                 (cdr (eval-scheme exp bindings extensions line-or-sexp lineno)))))))))

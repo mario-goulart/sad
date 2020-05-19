@@ -69,11 +69,13 @@ filter [<options>] <pattern>
         (input-iterator
          read-sexp?
          (lambda (sexp lineno)
-           (when ((if delete? not identity) (car (eval-scheme pattern '() sexp lineno)))
+           (when ((if delete? not identity)
+                  (car (eval-scheme pattern '() '() sexp lineno)))
              (maybe-stop sexp)))
          (lambda (line lineno)
            (if use-eval?
-               (when ((if delete? not identity) (car (eval-scheme pattern '() line lineno)))
+               (when ((if delete? not identity)
+                      (car (eval-scheme pattern '() '() line lineno)))
                  (maybe-stop line))
                (when ((if delete? not identity)
                       (irregex-search
