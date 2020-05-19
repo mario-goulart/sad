@@ -53,5 +53,6 @@ eval <options> <exp>
            (set! bindings
                  (cdr (eval-scheme exp bindings extensions line-or-sexp lineno))))
          finalizer: (and finalizer
-                         (lambda ()
-                           (eval-scheme finalizer bindings extensions #f #f))))))))
+                         (lambda (lineno)
+                           (eval-scheme
+                            finalizer bindings extensions "" lineno))))))))

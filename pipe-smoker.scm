@@ -64,7 +64,7 @@
     (let ((line (read-stdin-line)))
       (if (eof-object? line)
           (when finalizer
-            (finalizer))
+            (finalizer lineno))
           (begin
             (proc line lineno)
             (loop (add1 lineno)))))))
@@ -74,7 +74,7 @@
     (let ((sexp (read-stdin-sexp)))
       (if (eof-object? sexp)
           (when finalizer
-            (finalizer))
+            (finalizer lineno))
           (begin
             (proc sexp lineno)
             (loop (add1 lineno)))))))

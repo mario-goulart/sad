@@ -36,7 +36,7 @@ lines <range> [<range> ...]
              (read-from (and delete? (ranges-minimum-from ranges)))
              (dump-called? #f)
              (dump!
-              (lambda ()
+              (lambda (_)
                 (unless dump-called?
                   (set! dump-called? #t)
                   (let ((buffer (reverse buffer)))

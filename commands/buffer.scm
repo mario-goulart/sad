@@ -34,5 +34,5 @@ buffer [<options>] [<number of lines>]
                  (else
                   (set! lineno (add1 lineno))
                   (set! lines (cons line lines)))))
-         finalizer: (lambda ()
+         finalizer: (lambda (lineno)
                       (write (reverse lines))))))))
