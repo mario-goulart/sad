@@ -8,4 +8,5 @@
  (components
   (extension leak)
   (program leak-cmd
-           (component-dependencies leak))))
+           (component-dependencies leak)
+           (install-name leak))))
