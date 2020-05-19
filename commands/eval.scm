@@ -18,6 +18,10 @@ eval <options> <exp>
     --require-extension | -R <extension>
       Import a CHICKEN extension.  By default, big-chicken is imported.
       This parameter may be provided multiple times.
+
+    --finalizer | -f <exp>
+      Scheme expression to be evaluated after the whole input has been
+      consumed.
 "
   (lambda args*
     (let* ((args (parse-command-line
@@ -27,12 +31,14 @@ eval <options> <exp>
                      ,string->symbol
                      ,(lambda (x) (with-input-from-string x read)))
                     ((--require-extension -R) . ,string->symbol)
+                    ((--finalizer -f) . finalizer)
                     ((--read-sexp -r))
                     )))
            (read-sexp? (get-opt '(--read-sexp -r) args flag?: #t))
            (bindings (get-opt '(--bind -b) args multiple?: #t))
            (extensions
             (or (get-opt '(--require-extension -R) args multiple?: #t) '()))
+           (finalizer (get-opt '(--finalizer -f) args))
            (exp (and-let* ((e (get-opt '(--) args)))
                   (and (not (null? e)) (car e)))))
 
@@ -45,4 +51,7 @@ eval <options> <exp>
         (iterator
          (lambda (line-or-sexp lineno)
            (set! bindings
-                 (cdr (eval-scheme exp bindings extensions line-or-sexp lineno)))))))))
+                 (cdr (eval-scheme exp bindings extensions line-or-sexp lineno))))
+         finalizer: (and finalizer
+                         (lambda ()
+                           (eval-scheme finalizer bindings extensions #f #f))))))))
