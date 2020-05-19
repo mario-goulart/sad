@@ -66,5 +66,5 @@ lines <range> [<range> ...]
                      (print line-or-sexp)))
                (if (or (not read-until) (<= lineno read-until))
                    (set! buffer (cons line-or-sexp buffer))
-                   (dump!))))
+                   (dump! lineno))))
          finalizer: dump!)))))
