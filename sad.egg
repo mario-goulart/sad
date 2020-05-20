@@ -6,7 +6,7 @@
  (license "BSD")
  (dependencies big-chicken optimism slice srfi-1 srfi-13)
  (components
-  (extension leak)
-  (program leak-cmd
-           (component-dependencies leak)
-           (install-name leak))))
+  (extension sad)
+  (program sad-cmd
+           (component-dependencies sad)
+           (install-name sad))))

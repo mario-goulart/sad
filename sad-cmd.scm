@@ -1,4 +1,4 @@
-(module leak-cmd ()
+(module sad-cmd ()
 
 (import scheme)
 (import (chicken base)
@@ -11,7 +11,7 @@
         (chicken process-context)
         (chicken sort)
         (chicken string))
-(import leak)
+(import sad)
 (import optimism srfi-1 srfi-13 slice) ;; FIXME: remove slice?
 
 (include "commands/buffer.scm")
@@ -23,7 +23,7 @@
 (include "commands/replace.scm")
 
 (let ((user-conf
-       (make-pathname (get-environment-variable "HOME") ".leak.conf")))
+       (make-pathname (get-environment-variable "HOME") ".sad.conf")))
   (when (file-exists? user-conf)
     (load user-conf)))
 
