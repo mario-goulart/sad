@@ -1,8 +1,9 @@
 (define-command 'split
   "\
-split [<options>] <pattern>
+split [<options>] [<pattern>]
   Split the input according to <pattern> (a regular expression) and
-  output a Scheme list of strings.
+  output a Scheme list of strings.  If <pattern> is not provided,
+  split on spaces and tabs.
 
   <options>:
     --sre | -S
@@ -20,12 +21,11 @@ split [<options>] <pattern>
 
       (handle-command-help 'split args)
 
-      (unless pattern
-        (die! "split: missing pattern."))
-
-      (let ((pattern (if use-sre?
-                         (with-input-from-string pattern read)
-                         pattern)))
+      (let ((pattern (if pattern
+                         (if use-sre?
+                             (with-input-from-string pattern read)
+                             pattern)
+                         'blank)))
         (for-each-line
          (lambda (line lineno)
            (write (irregex-split pattern line))))))))
