@@ -9,7 +9,7 @@
  command-proc
  for-each-line
  for-each-sexp
- input-iterator
+ for-each-input
  list-ref*
  die!
  get-opt
@@ -79,7 +79,7 @@
             (proc sexp lineno)
             (loop (add1 lineno)))))))
 
-(define (input-iterator input-is-sexp? sexp-handler line-handler #!key finalizer)
+(define (for-each-input input-is-sexp? sexp-handler line-handler #!key finalizer)
   (if input-is-sexp?
       (for-each-sexp sexp-handler finalizer: finalizer)
       (for-each-line line-handler finalizer: finalizer)))

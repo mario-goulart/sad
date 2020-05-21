@@ -96,7 +96,7 @@ filter [<options>] <pattern>
                         pattern bindings extensions line-or-sexp lineno)))
                   (set! bindings (cdr res/bindings))
                   (car res/bindings)))))
-        (input-iterator
+        (for-each-input
          read-sexp?
          (lambda (sexp lineno)
            (when ((if delete? not identity) (evaluator sexp lineno))
