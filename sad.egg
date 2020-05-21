@@ -5,6 +5,7 @@
  (category tools)
  (license "BSD")
  (dependencies big-chicken optimism slice srfi-1 srfi-13)
+ (test-dependencies test)
  (components
   (extension sad)
   (program sad-cmd
