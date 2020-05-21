@@ -4,7 +4,7 @@
 (import (chicken base)
         (chicken io)
         (chicken file)
-        (chicken format)
+        (except (chicken format) format)
         (chicken irregex)
         (chicken pathname)
         (chicken port)
@@ -12,7 +12,7 @@
         (chicken sort)
         (chicken string))
 (import sad)
-(import optimism srfi-1 srfi-13 slice) ;; FIXME: remove slice?
+(import format optimism srfi-1 srfi-13 slice) ;; FIXME: remove slice?
 
 (include "commands/buffer.scm")
 (include "commands/cols.scm")

@@ -4,7 +4,7 @@
  (author "Mario Domenech Goulart")
  (category tools)
  (license "BSD")
- (dependencies big-chicken optimism slice srfi-1 srfi-13)
+ (dependencies big-chicken format optimism slice srfi-1 srfi-13)
  (test-dependencies test)
  (components
   (extension sad)
