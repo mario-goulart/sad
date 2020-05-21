@@ -126,6 +126,10 @@
         '()
         (let ((range (car ranges)))
           (cond
+           ;; ":"
+           ((equal? range ":")
+            (cons (make-range 0 #f) (loop (cdr ranges))))
+
            ;; "<number>"
            ((irregex-match '(: (* "-") (+ numeric)) range)
             (cons (string->number range)
