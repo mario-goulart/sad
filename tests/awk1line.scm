@@ -73,69 +73,143 @@
 (test-awk "precede each line by its line number"
           "seq 3 | awk '{print FNR \"\\t\" $0}'"
           "seq 3 | sad eval '(print (add1 LINENO) \"\t\" INPUT)'")
-;;
+
 ;;  # precede each line by its line number FOR ALL FILES TOGETHER, with tab.
 ;;  awk '{print NR "\t" $0}' files*
 ;;
 ;;  # number each line of a file (number on left, right-aligned)
 ;;  # Double the percent signs if typing from the DOS command prompt.
 ;;  awk '{printf("%5d : %s\n", NR,$0)}'
-;;
+(test-awk "number each line of a file (number on left, right-aligned)"
+          "seq 3 | awk '{printf(\"%5d : %s\\n\", NR,$0)}'"
+          "seq 3 | sad eval -R format -r '(format #t \"~5d : ~a~%\" (add1 LINENO) INPUT)'")
+
 ;;  # number each line of file, but only print numbers if line is not blank
 ;;  # Remember caveats about Unix treatment of \r (mentioned above)
 ;;  awk 'NF{$0=++a " :" $0};1'
 ;;  awk '{print (NF? ++a " :" :"") $0}'
-;;
+
+(test-awk "number each line of file, but only print numbers if line is not blank"
+          "seq 3 | awk 'BEGIN{ORS=\"\\n\\n\"};1' | awk 'NF{$0=++a \" :\" $0};1'"
+          "seq 3 | awk 'BEGIN{ORS=\"\\n\\n\"};1' | \
+           sad eval -b num 0 '(if (equal? INPUT \"\") (print) (begin (set! num (add1 num)) (print num \" :\" INPUT)))'")
+
 ;;  # count lines (emulates "wc -l")
 ;;  awk 'END{print NR}'
-;;
+(test-awk "count lines (emulates 'wc -l')"
+          "seq 3 | awk 'END{print NR}'"
+          "seq 3 | sad eval void -f '(print LINENO)'")
+
 ;;  # print the sums of the fields of every line
 ;;  awk '{s=0; for (i=1; i<=NF; i++) s=s+$i; print s}'
+(test-awk "print the sums of the fields of every line"
+          "seq 3 | awk '{s=0; for (i=1; i<=NF; i++) s=s+$i; print s}'"
+          "seq 3 | sad eval '(print (apply + (map string->number (string-split INPUT))))'")
 ;;
 ;;  # add all fields in all lines and print the sum
 ;;  awk '{for (i=1; i<=NF; i++) s=s+$i}; END{print s}'
-;;
+(test-awk "add all fields in all lines and print the sum"
+          "seq 3 | awk '{for (i=1; i<=NF; i++) s=s+$i}; END{print s}'"
+          "seq 3 | sad buffer | sad eval -r '(print (apply + (map string->number INPUT)))'")
+
+(test-awk "add all fields in all lines and print the sum"
+          "seq 3 | awk '{for (i=1; i<=NF; i++) s=s+$i}; END{print s}'"
+          "seq 3 | sad eval -b s 0 '(set! s (+ s (apply + (map string->number (string-split INPUT)))))' -f '(print s)'")
+
 ;;  # print every line after replacing each field with its absolute value
 ;;  awk '{for (i=1; i<=NF; i++) if ($i < 0) $i = -$i; print }'
 ;;  awk '{for (i=1; i<=NF; i++) $i = ($i < 0) ? -$i : $i; print }'
-;;
+(test-awk "print every line after replacing each field with its absolute value"
+          "seq -2 0 | awk '{for (i=1; i<=NF; i++) if ($i < 0) $i = -$i; print }'"
+          "seq -2 0 | sad eval '(print (string-intersperse (map (compose number->string abs string->number) (string-split INPUT))))'")
+
 ;;  # print the total number of fields ("words") in all lines
 ;;  awk '{ total = total + NF }; END {print total}' file
-;;
+(test-awk "print the total number of fields ('words') in all lines"
+          "(echo a b c; echo 1 2) | awk '{ total = total + NF }; END {print total}'"
+          "(echo a b c; echo 1 2) | sad split | sad eval -r -b total 0 '(set! total (+ total (length INPUT)))' -f '(print total)'")
+
 ;;  # print the total number of lines that contain "Beth"
 ;;  awk '/Beth/{n++}; END {print n+0}' file
-;;
+(test-awk "print the total number of lines that contain 'Beth'"
+          "(echo Beth; echo foo) | awk '/Beth/{n++}; END {print n+0}'"
+          "(echo Beth; echo foo) | sad filter Beth | sad buffer | sad eval -r '(print (length INPUT))'")
+
 ;;  # print the largest first field and the line that contains it
 ;;  # Intended for finding the longest string in field #1
 ;;  awk '$1 > max {max=$1; maxline=$0}; END{ print max, maxline}'
-;;
+(test-awk "print the largest first field and the line that contains it"
+          "(echo a; echo abc; echo ab) | awk '$1 > max {max=$1; maxline=$0}; END{ print max, maxline}'"
+          "(echo a; echo abc; echo ab) |\
+            sad eval -b maxline \\\"\\\" -b max \\\"\\\" \
+            '(let ((tokens (string-split INPUT)))
+               (when (and (not (null? tokens)) (> (string-length (car tokens)) (string-length maxline))) \
+                  (set! maxline INPUT) (set! max (car tokens))))' \
+            -f '(print max \" \" maxline)'")
+
 ;;  # print the number of fields in each line, followed by the line
 ;;  awk '{ print NF ":" $0 } '
-;;
+(test-awk "print the number of fields in each line, followed by the line"
+          "(echo a; echo a b c; echo a b) | awk '{ print NF \":\" $0 }'"
+          "(echo a; echo a b c; echo a b) | sad eval '(print (length (string-split INPUT)) \":\" INPUT)'")
+
 ;;  # print the last field of each line
 ;;  awk '{ print $NF }'
-;;
+(test-awk "print the last field of each line (1)"
+          "(echo a; echo a b c; echo a b) | awk '{ print $NF }'"
+          "(echo a; echo a b c; echo a b) | sad split | sad cols -1 | sad format \"~a~%\"")
+
+(test-awk "print the last field of each line (2)"
+          "(echo a; echo a b c; echo a b) | awk '{ print $NF }'"
+          "(echo a; echo a b c; echo a b) | sad split | sad eval -r -R srfi-1 '(unless (null? INPUT) (print (last INPUT)))'")
+
+(test-awk "print the last field of each line (3)"
+          "(echo a; echo a b c; echo a b) | awk '{ print $NF }'"
+          "(echo a; echo a b c; echo a b) | sad split | sad eval -r '(unless (null? INPUT) (print (car (reverse INPUT))))'")
+
 ;;  # print the last field of the last line
 ;;  awk '{ field = $NF }; END{ print field }'
-;;
+(test-awk "print the last field of the last line"
+          "(echo a; echo a b c; echo a b) | awk '{ field = $NF }; END{ print field }'"
+          "(echo a; echo a b c; echo a b) | sad lines -1 | sad split | sad cols -1 | sad format \"~a~%\"")
+
 ;;  # print every line with more than 4 fields
 ;;  awk 'NF > 4'
-;;
+(test-awk "print every line with more than 4 fields"
+          "(echo a; echo a b c d e; echo a b) | awk 'NF > 4'"
+          "(echo a; echo a b c d e; echo a b) | sad eval '(when (> (length (string-split INPUT)) 4) (print INPUT))'")
+
 ;;  # print every line where the value of the last field is > 4
 ;;  awk '$NF > 4'
+(test-awk "print every line where the value of the last field is > 4"
+          "(echo 1 3; echo 3 5) | awk '$NF > 4'"
+          "(echo 1 3; echo 3 5) |\
+           sad eval '(let* ((tokens (string-split INPUT))\
+                       (last (and (not (null? tokens)) (string->number (car (reverse tokens))))))\
+                         (when (and last (> last 4)) (print INPUT)))'")
 
 (test-end "NUMBERING AND CALCULATIONS")
 
+
+(test-begin "STRING CREATION")
 
 ;; STRING CREATION:
 ;;
 ;;  # create a string of a specific length (e.g., generate 513 spaces)
 ;;  awk 'BEGIN{while (a++<513) s=s " "; print s}'
-;;
+
+(test-awk "create a string of a specific length (e.g., generate 513 spaces)"
+          "awk 'BEGIN{while (a++<513) s=s \" \"; print s}'"
+          "echo | sad eval '(print (make-string 513 #\\space))'")
+
 ;;  # insert a string of specific length at a certain character position
 ;;  # Example: insert 49 spaces after column #6 of each input line.
 ;;  gawk --re-interval 'BEGIN{while(a++<49)s=s " "};{sub(/^.{6}/,"&" s)};1'
-;;
+
+;; TODO from here
+
+(test-end "STRING CREATION")
+
 ;;
 ;; ARRAY CREATION:
 ;;
