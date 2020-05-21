@@ -21,6 +21,7 @@
 (include "commands/format.scm")
 (include "commands/lines.scm")
 (include "commands/replace.scm")
+(include "commands/split.scm")
 
 (let ((user-conf
        (make-pathname (get-environment-variable "HOME") ".sad.conf")))
