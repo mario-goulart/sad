@@ -20,6 +20,8 @@ replace [<options>] <pattern> <replacement>
            (replace-all? (get-opt '(--all -a) args flag?: #t))
            (pattern/replacement (get-opt '(--) args)))
 
+      (handle-command-help 'replace args)
+
       (unless (= (length pattern/replacement) 2)
         (die! "replace: invalid <pattern> <replacement> specification."))
 
