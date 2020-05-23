@@ -239,8 +239,8 @@
                             (lambda (#!optional range #!key (default "") (conv identity))
                               (unless cols
                                 (set! cols
-                                      (if (pair? ,input)
-                                          ,input
+                                      (if (pair? (quote ,input))
+                                          (quote ,input)
                                           (irregex-split
                                            (quote ,(or cols-split-pattern 'blank)) ,input))))
                               (if range
