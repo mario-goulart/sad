@@ -84,10 +84,12 @@
       (for-each-sexp sexp-handler finalizer: finalizer)
       (for-each-line line-handler finalizer: finalizer)))
 
-(define (list-ref* lst idx)
+(define (list-ref* lst idx #!key (default ""))
   (handle-exceptions exn
-    ""
-    (list-ref lst idx)))
+    default
+    (if (< idx 0)
+        (list-ref (reverse lst) (abs (+ idx 1)))
+        (list-ref lst idx))))
 
 (define (handle-command-help command parsed-args)
   (when (get-opt '(--help -help -h) parsed-args flag?: #t)
@@ -217,25 +219,41 @@
 
 (define (list-slice lst range)
   (if (number? range)
-      (list
-       (if (< range 0)
-           (list-ref* (reverse lst) (abs (+ range 1)))
-           (list-ref* lst range)))
+      (list (list-ref* lst range))
       (slice lst (range-from range) (range-to range))))
 
-(define (eval-scheme exp bindings extensions input lineno)
+(define (eval-scheme exp bindings extensions input lineno cols-split-pattern)
   ;; Return a pair whose car is the value produced by the evaluation
   ;; of `exp' and cdr is an alist representing the new bindings.
+  ;; `cols-split-pattern' is expected to be a regex in SRE syntax.
   (let ((res/new-bindings
-         (eval `(let* ((INPUT (quote ,input))
-                       (LINENO (quote ,lineno))
-                       ,@bindings)
-                  (cons
-                   (begin
-                     (import big-chicken)
-                     (import ,@extensions)
-                     ,@(with-input-from-string exp read-list))
-                   (list ,@(map car bindings)))))))
+         (eval
+          `(begin
+             (import big-chicken)
+             (import ,@extensions)
+             ;; big-chicken until and including 1.0 didn't export irregex
+             (import (chicken irregex))
+             (let* ((INPUT (quote ,input))
+                    (LINENO (quote ,lineno))
+                    (COLS (let ((cols #f))
+                            (lambda (#!optional range #!key (default "") (conv identity))
+                              (unless cols
+                                (set! cols
+                                      (if (pair? ,input)
+                                          ,input
+                                          (irregex-split
+                                           (quote ,(or cols-split-pattern 'blank)) ,input))))
+                              (if range
+                                  (handle-exceptions exn
+                                    default
+                                    (conv (if (number? range)
+                                              (,list-ref* cols range)
+                                              (,list-slice cols (parse-range range)))))
+                                  cols)))))
+               (let* (,@bindings)
+                 (cons
+                  ,@(with-input-from-string exp read-list)
+                  (list ,@(map car bindings)))))))))
     (cons (car res/new-bindings)
           (map list (map car bindings) (cdr res/new-bindings)))))
 

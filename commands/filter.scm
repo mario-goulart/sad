@@ -34,7 +34,13 @@ filter [<options>] <pattern>
       Write sexps.
 
     --sre | -S
-      Indicate that <pattern> uses SRE syntax.
+      When --eval is not used, indicate that <pattern> uses SRE syntax.
+      When --eval is used, indicate that the argument for --split-pattern
+      uses SRE syntax.
+
+    --split-pattern <split pattern>
+      Regular expression to be used to split columns in lines when --eval
+      is used.
 
     --stop-after-matches | -n <num matches>
       Stop after reaching any matches.
@@ -53,6 +59,7 @@ filter [<options>] <pattern>
                     ((--read-sexp -r))
                     ((--write-sexp -w))
                     ((--stop-after-matches -n) . matches)
+                    ((--split-pattern -s) . pattern)
                     ((--sre -S)))))
            (delete? (get-opt '(--delete -d) args flag?: #t))
            (read-sexp? (get-opt '(--read-sexp -r) args flag?: #t))
@@ -64,6 +71,7 @@ filter [<options>] <pattern>
             (or (get-opt '(--require-extension -R) args multiple?: #t) '()))
            (finalizer (get-opt '(--finalizer -f) args))
            (stop-after-matches (get-opt '(--stop-after-matches -n) args))
+           (split-pattern (get-opt '(--split-pattern -s) args))
            (pattern (and-let* ((p (get-opt '(--) args)))
                       (and (not (null? p)) (car p)))))
 
@@ -89,11 +97,15 @@ filter [<options>] <pattern>
                 (when (and stop-after-matches (>= matches stop-after-matches))
                   (exit 0))
                 ((if write-sexp? write print) line-or-sexp)))
+             (spattern (and split-pattern
+                            (if use-sre?
+                                (with-input-from-string split-pattern read)
+                                (string->sre split-pattern))))
              (evaluator
               (lambda (line-or-sexp lineno)
                 (let ((res/bindings
                        (eval-scheme
-                        pattern bindings extensions line-or-sexp lineno)))
+                        pattern bindings extensions line-or-sexp lineno spattern)))
                   (set! bindings (cdr res/bindings))
                   (car res/bindings)))))
         (for-each-input
@@ -114,4 +126,5 @@ filter [<options>] <pattern>
                  (maybe-stop (if write-sexp? (list line) line)))))
          finalizer:  (and finalizer
                           (lambda (lineno)
-                            (eval-scheme finalizer bindings extensions "" lineno))))))))
+                            (eval-scheme
+                             finalizer bindings extensions "" lineno spattern))))))))

@@ -104,7 +104,7 @@
 ;;  awk '{s=0; for (i=1; i<=NF; i++) s=s+$i; print s}'
 (test-awk "print the sums of the fields of every line"
           "seq 3 | awk '{s=0; for (i=1; i<=NF; i++) s=s+$i; print s}'"
-          "seq 3 | sad eval '(print (apply + (map string->number (string-split INPUT))))'")
+          "seq 3 | sad eval '(print (apply + (map string->number (COLS))))'")
 ;;
 ;;  # add all fields in all lines and print the sum
 ;;  awk '{for (i=1; i<=NF; i++) s=s+$i}; END{print s}'
@@ -114,20 +114,24 @@
 
 (test-awk "add all fields in all lines and print the sum"
           "seq 3 | awk '{for (i=1; i<=NF; i++) s=s+$i}; END{print s}'"
-          "seq 3 | sad eval -b s 0 '(set! s (+ s (apply + (map string->number (string-split INPUT)))))' -f '(print s)'")
+          "seq 3 | sad eval -b s 0 '(set! s (+ s (apply + (map string->number (COLS)))))' -f '(print s)'")
 
 ;;  # print every line after replacing each field with its absolute value
 ;;  awk '{for (i=1; i<=NF; i++) if ($i < 0) $i = -$i; print }'
 ;;  awk '{for (i=1; i<=NF; i++) $i = ($i < 0) ? -$i : $i; print }'
 (test-awk "print every line after replacing each field with its absolute value"
           "seq -2 0 | awk '{for (i=1; i<=NF; i++) if ($i < 0) $i = -$i; print }'"
-          "seq -2 0 | sad eval '(print (string-intersperse (map (compose number->string abs string->number) (string-split INPUT))))'")
+          "seq -2 0 | sad eval '(print (string-intersperse (map (compose number->string abs string->number) (COLS))))'")
 
 ;;  # print the total number of fields ("words") in all lines
 ;;  awk '{ total = total + NF }; END {print total}' file
-(test-awk "print the total number of fields ('words') in all lines"
+(test-awk "print the total number of fields ('words') in all lines (1)"
           "(echo a b c; echo 1 2) | awk '{ total = total + NF }; END {print total}'"
           "(echo a b c; echo 1 2) | sad split | sad eval -r -b total 0 '(set! total (+ total (length INPUT)))' -f '(print total)'")
+
+(test-awk "print the total number of fields ('words') in all lines (2)"
+          "(echo a b c; echo 1 2) | awk '{ total = total + NF }; END {print total}'"
+          "(echo a b c; echo 1 2) | sad eval -b total 0 '(set! total (+ total (length (COLS))))' -f '(print total)'")
 
 ;;  # print the total number of lines that contain "Beth"
 ;;  awk '/Beth/{n++}; END {print n+0}' file
@@ -138,20 +142,21 @@
 ;;  # print the largest first field and the line that contains it
 ;;  # Intended for finding the longest string in field #1
 ;;  awk '$1 > max {max=$1; maxline=$0}; END{ print max, maxline}'
+
+;; FIXME: improve
 (test-awk "print the largest first field and the line that contains it"
           "(echo a; echo abc; echo ab) | awk '$1 > max {max=$1; maxline=$0}; END{ print max, maxline}'"
           "(echo a; echo abc; echo ab) |\
             sad eval -b maxline \\\"\\\" -b max \\\"\\\" \
-            '(let ((tokens (string-split INPUT)))
-               (when (and (not (null? tokens)) (> (string-length (car tokens)) (string-length maxline))) \
-                  (set! maxline INPUT) (set! max (car tokens))))' \
+            '(when (> (string-length (COLS 0 default: \"\")) (string-length maxline)) \
+               (set! maxline INPUT) (set! max (COLS 0)))' \
             -f '(print max \" \" maxline)'")
 
 ;;  # print the number of fields in each line, followed by the line
 ;;  awk '{ print NF ":" $0 } '
 (test-awk "print the number of fields in each line, followed by the line"
           "(echo a; echo a b c; echo a b) | awk '{ print NF \":\" $0 }'"
-          "(echo a; echo a b c; echo a b) | sad eval '(print (length (string-split INPUT)) \":\" INPUT)'")
+          "(echo a; echo a b c; echo a b) | sad eval '(print (length (COLS)) \":\" INPUT)'")
 
 ;;  # print the last field of each line
 ;;  awk '{ print $NF }'
@@ -165,7 +170,7 @@
 
 (test-awk "print the last field of each line (3)"
           "(echo a; echo a b c; echo a b) | awk '{ print $NF }'"
-          "(echo a; echo a b c; echo a b) | sad split | sad eval -r '(unless (null? INPUT) (print (car (reverse INPUT))))'")
+          "(echo a; echo a b c; echo a b) | sad eval '(print (COLS -1))'")
 
 ;;  # print the last field of the last line
 ;;  awk '{ field = $NF }; END{ print field }'
@@ -177,16 +182,14 @@
 ;;  awk 'NF > 4'
 (test-awk "print every line with more than 4 fields"
           "(echo a; echo a b c d e; echo a b) | awk 'NF > 4'"
-          "(echo a; echo a b c d e; echo a b) | sad eval '(when (> (length (string-split INPUT)) 4) (print INPUT))'")
+          "(echo a; echo a b c d e; echo a b) | sad eval '(when (> (length (COLS)) 4) (print INPUT))'")
 
 ;;  # print every line where the value of the last field is > 4
 ;;  awk '$NF > 4'
 (test-awk "print every line where the value of the last field is > 4"
           "(echo 1 3; echo 3 5) | awk '$NF > 4'"
           "(echo 1 3; echo 3 5) |\
-           sad eval '(let* ((tokens (string-split INPUT))\
-                       (last (and (not (null? tokens)) (string->number (car (reverse tokens))))))\
-                         (when (and last (> last 4)) (print INPUT)))'")
+           sad eval '(when (> (COLS -1 default: 0 conv: string->number) 4) (print INPUT))'")
 
 (test-end "NUMBERING AND CALCULATIONS")
 

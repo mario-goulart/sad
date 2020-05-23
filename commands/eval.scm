@@ -33,12 +33,16 @@ eval <options> <exp>
                     ((--require-extension -R) . ,string->symbol)
                     ((--finalizer -f) . finalizer)
                     ((--read-sexp -r))
+                    ((--sre -S))
+                    ((--split-pattern -s) . pattern)
                     )))
            (read-sexp? (get-opt '(--read-sexp -r) args flag?: #t))
            (bindings (get-opt '(--bind -b) args multiple?: #t))
            (extensions
             (or (get-opt '(--require-extension -R) args multiple?: #t) '()))
            (finalizer (get-opt '(--finalizer -f) args))
+           (use-sre? (get-opt '(--sre -S) args flag?: #t))
+           (split-pattern (get-opt '(--split-pattern -s) args))
            (exp (and-let* ((e (get-opt '(--) args)))
                   (and (not (null? e)) (car e)))))
 
@@ -47,12 +51,17 @@ eval <options> <exp>
       (unless exp
         (die! "eval: missing expression"))
 
-      (let ((iterator (if read-sexp? for-each-sexp for-each-line)))
+      (let ((iterator (if read-sexp? for-each-sexp for-each-line))
+            (pattern (and split-pattern
+                          (if use-sre?
+                              (with-input-from-string split-pattern read)
+                              (string->sre split-pattern)))))
         (iterator
          (lambda (line-or-sexp lineno)
            (set! bindings
-                 (cdr (eval-scheme exp bindings extensions line-or-sexp lineno))))
+                 (cdr (eval-scheme
+                       exp bindings extensions line-or-sexp lineno pattern))))
          finalizer: (and finalizer
                          (lambda (lineno)
                            (eval-scheme
-                            finalizer bindings extensions "" lineno))))))))
+                            finalizer bindings extensions "" lineno pattern))))))))
