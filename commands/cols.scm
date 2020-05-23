@@ -13,20 +13,34 @@ cols [<options>] <range> [<range> ...]
     --delete | -d
       Delete columns in the given ranges.  Note that selection and
       deletion are mutually exclusive.
+
+    --write-sexp | -w
+      Write sexps.
+
+    --joiner | -j
+      String to use to join columns when printing (except when
+      --write-sexp is given)  The default value is a space.
 "
   (lambda args*
     (let* ((args (parse-command-line
                   args*
                   '(((--help -help -h))
                     ((--delete -d))
+                    ((--write-sexp -w))
+                    ((--joiner -j))
                     )))
            (delete? (get-opt '(--delete -d) args flag?: #t))
+           (write-sexp? (get-opt '(--write-sexp -w) args flag?: #t))
+           (joiner (get-opt '(--joiner -j) args))
            (ranges (parse-ranges 'cols (get-opt '(--) args))))
 
       (handle-command-help 'cols args)
 
       (when (null? ranges)
         (die! "cols: missing columns specification."))
+
+      (when (and write-sexp? joiner)
+        (die! "--joiner and --write-sexp are mutually exclusive."))
 
       (for-each-sexp
        (lambda (sexp lineno)
@@ -45,4 +59,6 @@ cols [<options>] <range> [<range> ...]
                     (append-map (lambda (range)
                                   (apply list-slice (list sexp range)))
                                 ranges))))
-           (write slices)))))))
+           (if write-sexp?
+               (write slices)
+               (print (string-intersperse slices (or joiner " "))))))))))

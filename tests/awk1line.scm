@@ -162,7 +162,7 @@
 ;;  awk '{ print $NF }'
 (test-awk "print the last field of each line (1)"
           "(echo a; echo a b c; echo a b) | awk '{ print $NF }'"
-          "(echo a; echo a b c; echo a b) | sad split | sad cols -1 | sad format \"~a~%\"")
+          "(echo a; echo a b c; echo a b) | sad split | sad cols -w -1 | sad format \"~a~%\"")
 
 (test-awk "print the last field of each line (2)"
           "(echo a; echo a b c; echo a b) | awk '{ print $NF }'"
@@ -176,7 +176,7 @@
 ;;  awk '{ field = $NF }; END{ print field }'
 (test-awk "print the last field of the last line"
           "(echo a; echo a b c; echo a b) | awk '{ field = $NF }; END{ print field }'"
-          "(echo a; echo a b c; echo a b) | sad lines -1 | sad split | sad cols -1 | sad format \"~a~%\"")
+          "(echo a; echo a b c; echo a b) | sad lines -1 | sad split | sad cols -w -1 | sad format \"~a~%\"")
 
 ;;  # print every line with more than 4 fields
 ;;  awk 'NF > 4'
