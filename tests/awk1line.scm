@@ -208,8 +208,8 @@
 ;;  # insert a string of specific length at a certain character position
 ;;  # Example: insert 49 spaces after column #6 of each input line.
 ;;  gawk --re-interval 'BEGIN{while(a++<49)s=s " "};{sub(/^.{6}/,"&" s)};1'
-
-;; TODO from here
+;;
+;; TODO
 
 (test-end "STRING CREATION")
 
@@ -227,15 +227,25 @@
 ;;  # mdigit["Jan"] is 1, mdigit["Feb"] is 2, etc. Requires "month" array
 ;;  for (i=1; i<=12; i++) mdigit[month[i]] = i
 ;;
-;;
+
+(test-begin "TEXT CONVERSION AND SUBSTITUTION")
+
 ;; TEXT CONVERSION AND SUBSTITUTION:
 ;;
 ;;  # IN UNIX ENVIRONMENT: convert DOS newlines (CR/LF) to Unix format
 ;;  awk '{sub(/\r$/,"")};1'   # assumes EACH line ends with Ctrl-M
+
+(test-awk "convert DOS newlines (CR/LF) to Unix format"
+          "printf 'foo\r\nbar\r\nbaz' | awk '{sub(/\\r$/,\"\")};1'"
+          "printf 'foo\r\nbar\r\nbaz' | sad replace '\\r$' ''")
 ;;
 ;;  # IN UNIX ENVIRONMENT: convert Unix newlines (LF) to DOS format
 ;;  awk '{sub(/$/,"\r")};1'
-;;
+
+(test-awk "convert Unix newlines (LF) to DOS format"
+          "printf 'foo\nbar\nbaz' | awk '{sub(/$/,\"\\r\")};1'"
+          "printf 'foo\nbar\nbaz' | sad replace '$' '\r'")
+
 ;;  # IN DOS ENVIRONMENT: convert Unix newlines (LF) to DOS format
 ;;  awk 1
 ;;
@@ -249,28 +259,54 @@
 ;;  # delete leading whitespace (spaces, tabs) from front of each line
 ;;  # aligns all text flush left
 ;;  awk '{sub(/^[ \t]+/, "")};1'
-;;
+
+(test-awk "delete leading whitespace (spaces, tabs) from front of each line"
+          "(printf '   abc\n'; printf '\txyz') | awk '{sub(/^[ \t]+/, \"\")};1'"
+          "(printf '   abc\n'; printf '\txyz') | sad replace '^[ \t]+' ''")
+
 ;;  # delete trailing whitespace (spaces, tabs) from end of each line
 ;;  awk '{sub(/[ \t]+$/, "")};1'
-;;
+
+(test-awk "delete trailing whitespace (spaces, tabs) from end of each line"
+          "(printf 'abc    \n'; printf 'xyz\t') | awk '{sub(/[ \t]+$/, \"\")};1'"
+          "(printf 'abc    \n'; printf 'xyz\t') | sad replace '[ \t]+$' ''")
+
 ;;  # delete BOTH leading and trailing whitespace from each line
 ;;  awk '{gsub(/^[ \t]+|[ \t]+$/,"")};1'
 ;;  awk '{$1=$1};1'           # also removes extra space between fields
-;;
+
+(test-awk "delete BOTH leading and trailing whitespace from each line"
+          "(printf '  abc  \n'; printf '\txyz\t') | awk '{gsub(/^[ \t]+|[ \t]+$/,\"\")};1'"
+          "(printf '  abc  \n'; printf '\txyz\t') | sad replace --all '^[ \t]+|[ \t]+$' ''")
+
 ;;  # insert 5 blank spaces at beginning of each line (make page offset)
 ;;  awk '{sub(/^/, "     ")};1'
-;;
+
+(test-awk "insert 5 blank spaces at beginning of each line (make page offset)"
+          "seq 3 | awk '{sub(/^/, \"     \")};1'"
+          "seq 3 | sad replace '^' '     '")
+
 ;;  # align all text flush right on a 79-column width
 ;;  awk '{printf "%79s\n", $0}' file*
+;;
+;; TODO
 ;;
 ;;  # center all text on a 79-character width
 ;;  awk '{l=length();s=int((79-l)/2); printf "%"(s+l)"s\n",$0}' file*
 ;;
+;; TODO
+
 ;;  # substitute (find and replace) "foo" with "bar" on each line
 ;;  awk '{sub(/foo/,"bar")}; 1'           # replace only 1st instance
 ;;  gawk '{$0=gensub(/foo/,"bar",4)}; 1'  # replace only 4th instance
 ;;  awk '{gsub(/foo/,"bar")}; 1'          # replace ALL instances in a line
-;;
+
+(test-awk "substitute (find and replace) 'foo' with 'bar' on each line"
+          "(printf 'foomatic\n'; printf 'afoo\n') | awk '{sub(/foo/,\"bar\")}; 1'"
+          "(printf 'foomatic\n'; printf 'afoo\n') | sad replace foo bar")
+
+;; TODO from here
+
 ;;  # substitute "foo" with "bar" ONLY for lines which contain "baz"
 ;;  awk '/baz/{gsub(/foo/, "bar")}; 1'
 ;;
@@ -305,8 +341,10 @@
 ;;  # concatenate every 5 lines of input, using a comma separator
 ;;  # between fields
 ;;  awk 'ORS=NR%5?",":"\n"' file
-;;
-;;
+
+(test-end "TEXT CONVERSION AND SUBSTITUTION")
+
+
 ;; SELECTIVE PRINTING OF CERTAIN LINES:
 ;;
 ;;  # print first 10 lines of file (emulates behavior of "head")
