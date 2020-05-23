@@ -43,7 +43,7 @@
 ;;  # double space a file
 ;;  awk '1;{print ""}'
 ;;  awk 'BEGIN{ORS="\n\n"};1'
-(test-awk "double space a file"
+(test-sad "double space a file"
           "seq 3 | awk 'BEGIN{ORS=\"\\n\\n\"};1'"
           "seq 3 | sad eval '(print INPUT \"\n\")'")
 
@@ -52,13 +52,13 @@
 ;;  # NOTE: On Unix systems, DOS lines which have only CRLF (\r\n) are
 ;;  # often treated as non-blank, and thus 'NF' alone will return TRUE.
 ;;  awk 'NF{print $0 "\n"}'
-(test-awk "double space a file which already has blank lines in it"
+(test-sad "double space a file which already has blank lines in it"
           "seq 3 | awk 'NF{print $0 \"\\n\"}'"
           "seq 3 | sad eval -R srfi-13 '(print (string-trim-right INPUT) \"\n\")'")
 
 ;;  # triple space a file
 ;;  awk '1;{print "\n"}'
-(test-awk "triple space a file"
+(test-sad "triple space a file"
           "seq 3 | awk '1;{print \"\\n\"}'"
           "seq 3 | sad eval '(print INPUT \"\n\n\")'")
 
@@ -70,7 +70,7 @@
 ;;  # precede each line by its line number FOR THAT FILE (left alignment).
 ;;  # Using a tab (\t) instead of space will preserve margins.
 ;;  awk '{print FNR "\t" $0}' files*
-(test-awk "precede each line by its line number"
+(test-sad "precede each line by its line number"
           "seq 3 | awk '{print FNR \"\\t\" $0}'"
           "seq 3 | sad eval '(print (add1 LINENO) \"\t\" INPUT)'")
 
@@ -80,7 +80,7 @@
 ;;  # number each line of a file (number on left, right-aligned)
 ;;  # Double the percent signs if typing from the DOS command prompt.
 ;;  awk '{printf("%5d : %s\n", NR,$0)}'
-(test-awk "number each line of a file (number on left, right-aligned)"
+(test-sad "number each line of a file (number on left, right-aligned)"
           "seq 3 | awk '{printf(\"%5d : %s\\n\", NR,$0)}'"
           "seq 3 | sad eval -R format -r '(format #t \"~5d : ~a~%\" (add1 LINENO) INPUT)'")
 
@@ -89,53 +89,53 @@
 ;;  awk 'NF{$0=++a " :" $0};1'
 ;;  awk '{print (NF? ++a " :" :"") $0}'
 
-(test-awk "number each line of file, but only print numbers if line is not blank"
+(test-sad "number each line of file, but only print numbers if line is not blank"
           "seq 3 | awk 'BEGIN{ORS=\"\\n\\n\"};1' | awk 'NF{$0=++a \" :\" $0};1'"
           "seq 3 | awk 'BEGIN{ORS=\"\\n\\n\"};1' | \
            sad eval -b num 0 '(if (equal? INPUT \"\") (print) (begin (set! num (add1 num)) (print num \" :\" INPUT)))'")
 
 ;;  # count lines (emulates "wc -l")
 ;;  awk 'END{print NR}'
-(test-awk "count lines (emulates 'wc -l')"
+(test-sad "count lines (emulates 'wc -l')"
           "seq 3 | awk 'END{print NR}'"
           "seq 3 | sad eval void -f '(print LINENO)'")
 
 ;;  # print the sums of the fields of every line
 ;;  awk '{s=0; for (i=1; i<=NF; i++) s=s+$i; print s}'
-(test-awk "print the sums of the fields of every line"
+(test-sad "print the sums of the fields of every line"
           "seq 3 | awk '{s=0; for (i=1; i<=NF; i++) s=s+$i; print s}'"
           "seq 3 | sad eval '(print (apply + (map string->number (COLS))))'")
 ;;
 ;;  # add all fields in all lines and print the sum
 ;;  awk '{for (i=1; i<=NF; i++) s=s+$i}; END{print s}'
-(test-awk "add all fields in all lines and print the sum"
+(test-sad "add all fields in all lines and print the sum"
           "seq 3 | awk '{for (i=1; i<=NF; i++) s=s+$i}; END{print s}'"
           "seq 3 | sad buffer | sad eval -r '(print (apply + (map string->number INPUT)))'")
 
-(test-awk "add all fields in all lines and print the sum"
+(test-sad "add all fields in all lines and print the sum"
           "seq 3 | awk '{for (i=1; i<=NF; i++) s=s+$i}; END{print s}'"
           "seq 3 | sad eval -b s 0 '(set! s (+ s (apply + (map string->number (COLS)))))' -f '(print s)'")
 
 ;;  # print every line after replacing each field with its absolute value
 ;;  awk '{for (i=1; i<=NF; i++) if ($i < 0) $i = -$i; print }'
 ;;  awk '{for (i=1; i<=NF; i++) $i = ($i < 0) ? -$i : $i; print }'
-(test-awk "print every line after replacing each field with its absolute value"
+(test-sad "print every line after replacing each field with its absolute value"
           "seq -2 0 | awk '{for (i=1; i<=NF; i++) if ($i < 0) $i = -$i; print }'"
           "seq -2 0 | sad eval '(print (string-intersperse (map (compose number->string abs string->number) (COLS))))'")
 
 ;;  # print the total number of fields ("words") in all lines
 ;;  awk '{ total = total + NF }; END {print total}' file
-(test-awk "print the total number of fields ('words') in all lines (1)"
+(test-sad "print the total number of fields ('words') in all lines (1)"
           "(echo a b c; echo 1 2) | awk '{ total = total + NF }; END {print total}'"
           "(echo a b c; echo 1 2) | sad split | sad eval -r -b total 0 '(set! total (+ total (length INPUT)))' -f '(print total)'")
 
-(test-awk "print the total number of fields ('words') in all lines (2)"
+(test-sad "print the total number of fields ('words') in all lines (2)"
           "(echo a b c; echo 1 2) | awk '{ total = total + NF }; END {print total}'"
           "(echo a b c; echo 1 2) | sad eval -b total 0 '(set! total (+ total (length (COLS))))' -f '(print total)'")
 
 ;;  # print the total number of lines that contain "Beth"
 ;;  awk '/Beth/{n++}; END {print n+0}' file
-(test-awk "print the total number of lines that contain 'Beth'"
+(test-sad "print the total number of lines that contain 'Beth'"
           "(echo Beth; echo foo) | awk '/Beth/{n++}; END {print n+0}'"
           "(echo Beth; echo foo) | sad filter Beth | sad buffer | sad eval -r '(print (length INPUT))'")
 
@@ -144,7 +144,7 @@
 ;;  awk '$1 > max {max=$1; maxline=$0}; END{ print max, maxline}'
 
 ;; FIXME: improve
-(test-awk "print the largest first field and the line that contains it"
+(test-sad "print the largest first field and the line that contains it"
           "(echo a; echo abc; echo ab) | awk '$1 > max {max=$1; maxline=$0}; END{ print max, maxline}'"
           "(echo a; echo abc; echo ab) |\
             sad eval -b maxline \\\"\\\" -b max \\\"\\\" \
@@ -154,39 +154,39 @@
 
 ;;  # print the number of fields in each line, followed by the line
 ;;  awk '{ print NF ":" $0 } '
-(test-awk "print the number of fields in each line, followed by the line"
+(test-sad "print the number of fields in each line, followed by the line"
           "(echo a; echo a b c; echo a b) | awk '{ print NF \":\" $0 }'"
           "(echo a; echo a b c; echo a b) | sad eval '(print (length (COLS)) \":\" INPUT)'")
 
 ;;  # print the last field of each line
 ;;  awk '{ print $NF }'
-(test-awk "print the last field of each line (1)"
+(test-sad "print the last field of each line (1)"
           "(echo a; echo a b c; echo a b) | awk '{ print $NF }'"
           "(echo a; echo a b c; echo a b) | sad split | sad cols -w -1 | sad format \"~a~%\"")
 
-(test-awk "print the last field of each line (2)"
+(test-sad "print the last field of each line (2)"
           "(echo a; echo a b c; echo a b) | awk '{ print $NF }'"
           "(echo a; echo a b c; echo a b) | sad split | sad eval -r -R srfi-1 '(unless (null? INPUT) (print (last INPUT)))'")
 
-(test-awk "print the last field of each line (3)"
+(test-sad "print the last field of each line (3)"
           "(echo a; echo a b c; echo a b) | awk '{ print $NF }'"
           "(echo a; echo a b c; echo a b) | sad eval '(print (COLS -1))'")
 
 ;;  # print the last field of the last line
 ;;  awk '{ field = $NF }; END{ print field }'
-(test-awk "print the last field of the last line"
+(test-sad "print the last field of the last line"
           "(echo a; echo a b c; echo a b) | awk '{ field = $NF }; END{ print field }'"
           "(echo a; echo a b c; echo a b) | sad lines -1 | sad split | sad cols -w -1 | sad format \"~a~%\"")
 
 ;;  # print every line with more than 4 fields
 ;;  awk 'NF > 4'
-(test-awk "print every line with more than 4 fields"
+(test-sad "print every line with more than 4 fields"
           "(echo a; echo a b c d e; echo a b) | awk 'NF > 4'"
           "(echo a; echo a b c d e; echo a b) | sad eval '(when (> (length (COLS)) 4) (print INPUT))'")
 
 ;;  # print every line where the value of the last field is > 4
 ;;  awk '$NF > 4'
-(test-awk "print every line where the value of the last field is > 4"
+(test-sad "print every line where the value of the last field is > 4"
           "(echo 1 3; echo 3 5) | awk '$NF > 4'"
           "(echo 1 3; echo 3 5) |\
            sad eval '(when (> (COLS -1 default: 0 conv: string->number) 4) (print INPUT))'")
@@ -201,7 +201,7 @@
 ;;  # create a string of a specific length (e.g., generate 513 spaces)
 ;;  awk 'BEGIN{while (a++<513) s=s " "; print s}'
 
-(test-awk "create a string of a specific length (e.g., generate 513 spaces)"
+(test-sad "create a string of a specific length (e.g., generate 513 spaces)"
           "awk 'BEGIN{while (a++<513) s=s \" \"; print s}'"
           "echo | sad eval '(print (make-string 513 #\\space))'")
 
@@ -235,14 +235,14 @@
 ;;  # IN UNIX ENVIRONMENT: convert DOS newlines (CR/LF) to Unix format
 ;;  awk '{sub(/\r$/,"")};1'   # assumes EACH line ends with Ctrl-M
 
-(test-awk "convert DOS newlines (CR/LF) to Unix format"
+(test-sad "convert DOS newlines (CR/LF) to Unix format"
           "printf 'foo\r\nbar\r\nbaz' | awk '{sub(/\\r$/,\"\")};1'"
           "printf 'foo\r\nbar\r\nbaz' | sad replace '\\r$' ''")
 ;;
 ;;  # IN UNIX ENVIRONMENT: convert Unix newlines (LF) to DOS format
 ;;  awk '{sub(/$/,"\r")};1'
 
-(test-awk "convert Unix newlines (LF) to DOS format"
+(test-sad "convert Unix newlines (LF) to DOS format"
           "printf 'foo\nbar\nbaz' | awk '{sub(/$/,\"\\r\")};1'"
           "printf 'foo\nbar\nbaz' | sad replace '$' '\r'")
 
@@ -260,14 +260,14 @@
 ;;  # aligns all text flush left
 ;;  awk '{sub(/^[ \t]+/, "")};1'
 
-(test-awk "delete leading whitespace (spaces, tabs) from front of each line"
+(test-sad "delete leading whitespace (spaces, tabs) from front of each line"
           "(printf '   abc\n'; printf '\txyz') | awk '{sub(/^[ \t]+/, \"\")};1'"
           "(printf '   abc\n'; printf '\txyz') | sad replace '^[ \t]+' ''")
 
 ;;  # delete trailing whitespace (spaces, tabs) from end of each line
 ;;  awk '{sub(/[ \t]+$/, "")};1'
 
-(test-awk "delete trailing whitespace (spaces, tabs) from end of each line"
+(test-sad "delete trailing whitespace (spaces, tabs) from end of each line"
           "(printf 'abc    \n'; printf 'xyz\t') | awk '{sub(/[ \t]+$/, \"\")};1'"
           "(printf 'abc    \n'; printf 'xyz\t') | sad replace '[ \t]+$' ''")
 
@@ -275,14 +275,14 @@
 ;;  awk '{gsub(/^[ \t]+|[ \t]+$/,"")};1'
 ;;  awk '{$1=$1};1'           # also removes extra space between fields
 
-(test-awk "delete BOTH leading and trailing whitespace from each line"
+(test-sad "delete BOTH leading and trailing whitespace from each line"
           "(printf '  abc  \n'; printf '\txyz\t') | awk '{gsub(/^[ \t]+|[ \t]+$/,\"\")};1'"
           "(printf '  abc  \n'; printf '\txyz\t') | sad replace --all '^[ \t]+|[ \t]+$' ''")
 
 ;;  # insert 5 blank spaces at beginning of each line (make page offset)
 ;;  awk '{sub(/^/, "     ")};1'
 
-(test-awk "insert 5 blank spaces at beginning of each line (make page offset)"
+(test-sad "insert 5 blank spaces at beginning of each line (make page offset)"
           "seq 3 | awk '{sub(/^/, \"     \")};1'"
           "seq 3 | sad replace '^' '     '")
 
@@ -301,7 +301,7 @@
 ;;  gawk '{$0=gensub(/foo/,"bar",4)}; 1'  # replace only 4th instance
 ;;  awk '{gsub(/foo/,"bar")}; 1'          # replace ALL instances in a line
 
-(test-awk "substitute (find and replace) 'foo' with 'bar' on each line"
+(test-sad "substitute (find and replace) 'foo' with 'bar' on each line"
           "(printf 'foomatic\n'; printf 'afoo\n') | awk '{sub(/foo/,\"bar\")}; 1'"
           "(printf 'foomatic\n'; printf 'afoo\n') | sad replace foo bar")
 

@@ -6,7 +6,7 @@
 (define (run command)
   (with-input-from-pipe command read-string))
 
-(define-syntax test-awk
+(define-syntax test-sad
   (syntax-rules ()
     ((_ description awk-command sad-command)
      (test description (run awk-command) (run sad-command)))))
