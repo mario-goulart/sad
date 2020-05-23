@@ -4,11 +4,17 @@ buffer [<options>] [<number of lines>]
   Accumulate <number of lines> (a positive integer) and then dump
   them as sexps.  If <number of lines> is not provided, buffer all
   the input.
+
+  <options>:
+    --read-sexp | -r
+      Assume inputs are sexps.
 "
   (lambda args*
     (let* ((args (parse-command-line
                   args*
-                  '(((--help -help -h)))))
+                  '(((--help -help -h))
+                    ((--read-sexp -r)))))
+           (read-sexp? (get-opt '(--read-sexp -r) args flag?: #t))
            (num-lines%
             (and-let* ((n (get-opt '(--) args)))
               (and (not (null? n)) (car n))))
@@ -23,16 +29,17 @@ buffer [<options>] [<number of lines>]
                  (or (negative? num-lines) (not (integer? num-lines))))
         (die! "buffer: <number of lines> must be a positive integer."))
 
-      (let ((lines '())
-            (lineno 0))
-        (for-each-line
-         (lambda (line _)
+      (let ((lines-or-sexps '())
+            (lineno 0)
+            (iterator (if read-sexp? for-each-sexp for-each-line)))
+        (iterator
+         (lambda (line-or-sexp _)
            (cond ((and num-lines (< (sub1 num-lines) lineno))
-                  (write (reverse lines))
+                  (write (reverse lines-or-sexps))
                   (set! lineno 1)
-                  (set! lines (list line)))
+                  (set! lines-or-sexps (list line-or-sexp)))
                  (else
                   (set! lineno (add1 lineno))
-                  (set! lines (cons line lines)))))
+                  (set! lines-or-sexps (cons line-or-sexp lines-or-sexps)))))
          finalizer: (lambda (lineno)
-                      (write (reverse lines))))))))
+                      (write (reverse lines-or-sexps))))))))
