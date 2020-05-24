@@ -306,69 +306,134 @@
           "(printf 'foomatic\n'; printf 'afoo\n') | awk '{sub(/foo/,\"bar\")}; 1'"
           "(printf 'foomatic\n'; printf 'afoo\n') | sad replace foo bar")
 
-;; TODO from here
-
 ;;  # substitute "foo" with "bar" ONLY for lines which contain "baz"
 ;;  awk '/baz/{gsub(/foo/, "bar")}; 1'
-;;
+
+(test-sad "substitute 'foo' with 'bar' ONLY for lines which contain 'baz'"
+          "(printf 'foo bar\n'; printf 'foo baz\n') | awk '/baz/{gsub(/foo/, \"bar\")}; 1'"
+          "(printf 'foo bar\n'; printf 'foo baz\n') | sad replace --match baz foo bar")
+
 ;;  # substitute "foo" with "bar" EXCEPT for lines which contain "baz"
 ;;  awk '!/baz/{gsub(/foo/, "bar")}; 1'
-;;
+
+(test-sad "substitute 'foo' with 'bar' EXCEPT for lines which contain 'baz'"
+          "(printf 'foo bar\n'; printf 'foo baz\n') | awk '!/baz/{gsub(/foo/, \"bar\")}; 1'"
+          "(printf 'foo bar\n'; printf 'foo baz\n') | sad replace --not-match baz foo bar")
+
 ;;  # change "scarlet" or "ruby" or "puce" to "red"
 ;;  awk '{gsub(/scarlet|ruby|puce/, "red")}; 1'
-;;
+
+(test-sad "change 'scarlet' or 'ruby' or 'puce' to 'red'"
+          "(printf 'foo scarlet\n'; printf 'puce baz\n') | awk '{gsub(/scarlet|ruby|puce/, \"red\")}; 1'"
+          "(printf 'foo scarlet\n'; printf 'puce baz\n') | sad replace 'scarlet|ruby|puce' red")
+
 ;;  # reverse order of lines (emulates "tac")
 ;;  awk '{a[i++]=$0} END {for (j=i-1; j>=0;) print a[j--] }' file*
+
+(test-sad "reverse order of lines (emulates 'tac')"
+          "seq 3 | awk '{a[i++]=$0} END {for (j=i-1; j>=0;) print a[j--] }'"
+          "seq 3 | sad buffer | sad eval -r '(for-each print (reverse INPUT))'")
 ;;
 ;;  # if a line ends with a backslash, append the next line to it (fails if
 ;;  # there are multiple lines ending with backslash...)
 ;;  awk '/\\$/ {sub(/\\$/,""); getline t; print $0 t; next}; 1' file*
-;;
+(test-sad "if a line ends with a backslash, append the next line to it"
+          "(printf 'foo scarlet \\\n'; printf 'nuce baz') |\
+           awk '/\\\\$/ {sub(/\\\\$/,\"\"); getline t; print $0 t; next}; 1'"
+          "(printf 'foo scarlet \\\n'; printf 'nuce baz') |\
+           sad buffer 2 |\
+           sad eval -r -R srfi-13 \
+             '(if (string-suffix? \"\\\\\" (car INPUT))\
+                (print (string-append (string-drop-right (car INPUT) 1) (cadr INPUT)))\
+                (for-each print INPUT))'")
+
 ;;  # print and sort the login names of all users
 ;;  awk -F ":" '{print $1 | "sort" }' /etc/passwd
-;;
+(test-sad "print and sort the login names of all users"
+          "cat /etc/passwd | awk -F ':' '{print $1 | \"sort\" }'"
+          "cat /etc/passwd | sad split : | sad cols 0 | sort")
+
 ;;  # print the first 2 fields, in opposite order, of every line
 ;;  awk '{print $2, $1}' file
-;;
+(test-sad "print the first 2 fields, in opposite order, of every line"
+          "(echo 1 2; echo 3 4) | awk '{print $2, $1}'"
+          "(echo 1 2; echo 3 4) | sad split | sad cols 1 0")
+
 ;;  # switch the first 2 fields of every line
 ;;  awk '{temp = $1; $1 = $2; $2 = temp}' file
 ;;
 ;;  # print every line, deleting the second field of that line
 ;;  awk '{ $2 = ""; print }'
-;;
-;;  # print in reverse order the fields of every line
+(test-sad "print every line, deleting the second field of that line"
+          "(echo 1 2; echo 3 4) | awk '{ $2 = \"\"; print }'"
+          "(echo 1 2; echo 3 4) | sad split | sad cols 0 | sad replace '$' ' '")
+
+;;  # print in reverse order the fields of every linew
 ;;  awk '{for (i=NF; i>0; i--) printf("%s ",$i);print ""}' file
-;;
+(test-sad "print in reverse order the fields of every line"
+          "(echo 1 2; echo 3 4) | awk '{for (i=NF; i>0; i--) printf(\"%s \",$i);print \"\"}'"
+          "(echo 1 2; echo 3 4) |\
+           sad split |\
+           sad eval -r -R chicken.string '(print (string-intersperse (reverse (COLS))))' |\
+           sad replace '$' ' '")
+
 ;;  # concatenate every 5 lines of input, using a comma separator
 ;;  # between fields
 ;;  awk 'ORS=NR%5?",":"\n"' file
+(test-sad "concatenate every 5 lines of input, using a comma separator between fields"
+          "seq 10 | awk 'ORS=NR%5?\",\":\"\\n\"'"
+          "seq 10 | sad buffer 5 | sad eval -r -R chicken.string '(print (string-intersperse INPUT \",\"))'")
 
 (test-end "TEXT CONVERSION AND SUBSTITUTION")
 
 
+(test-begin "SELECTIVE PRINTING OF CERTAIN LINES")
 ;; SELECTIVE PRINTING OF CERTAIN LINES:
 ;;
 ;;  # print first 10 lines of file (emulates behavior of "head")
 ;;  awk 'NR < 11'
-;;
+(test-sad "print first 10 lines of file (emulates behavior of 'head')"
+          "seq 20 | awk 'NR < 11'"
+          "seq 20 | sad lines :10")
+
 ;;  # print first line of file (emulates "head -1")
 ;;  awk 'NR>1{exit};1'
-;;
+(test-sad "print first line of file (emulates 'head -1')"
+          "seq 5 | awk 'NR>1{exit};1'"
+          "seq 5 | sad lines 0")
+
 ;;   # print the last 2 lines of a file (emulates "tail -2")
 ;;  awk '{y=x "\n" $0; x=$0};END{print y}'
-;;
+(test-sad "print the last 2 lines of a file (emulates 'tail -2')"
+          "seq 5 | awk '{y=x \"\\n\" $0; x=$0};END{print y}'"
+          "seq 5 | sad lines -2:")
+
 ;;  # print the last line of a file (emulates "tail -1")
 ;;  awk 'END{print}'
-;;
+(test-sad "print the last line of a file (emulates 'tail -1')"
+          "seq 5 | awk 'END{print}'"
+          "seq 5 | sad lines -1:")
+
 ;;  # print only lines which match regular expression (emulates "grep")
 ;;  awk '/regex/'
-;;
+(test-sad "print only lines which match regular expression (emulates 'grep')"
+          "(echo foo; echo bar) | awk '/bar/'"
+          "(echo foo; echo bar) | sad filter bar")
+
 ;;  # print only lines which do NOT match regex (emulates "grep -v")
 ;;  awk '!/regex/'
-;;
+(test-sad "print only lines which do NOT match regex (emulates 'grep -v')"
+          "(echo foo; echo bar) | awk '!/bar/'"
+          "(echo foo; echo bar) | sad filter -d bar")
+
 ;;  # print any line where field #5 is equal to "abc123"
 ;;  awk '$5 == "abc123"'
-;;
+(test-sad "print any line where field #5 is equal to 'abc123'"
+          "(echo '1 2 3 4 abc123'; echo '1 2 3 4 5') | awk '$5 == \"abc123\"'"
+          "(echo '1 2 3 4 abc123'; echo '1 2 3 4 5') | sad eval '(when (equal? (COLS 4) \"abc123\") (print INPUT))'")
+
+;; TODO from here
+
 ;;  # print only those lines where field #5 is NOT equal to "abc123"
 ;;  # This will also print lines which have less than 5 fields.
 ;;  awk '$5 != "abc123"'
@@ -412,8 +477,10 @@
 ;;
 ;;  # print section of file between two regular expressions (inclusive)
 ;;  awk '/Iowa/,/Montana/'             # case sensitive
-;;
-;;
+
+(test-end "SELECTIVE PRINTING OF CERTAIN LINES")
+
+
 ;; SELECTIVE DELETION OF CERTAIN LINES:
 ;;
 ;;  # delete ALL blank lines from a file (same as "grep '.' ")
