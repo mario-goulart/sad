@@ -19,9 +19,9 @@ filter [<options>] <pattern>
       times.
 
     --require-extension | -R <extension>
-      Import a CHICKEN extension.  By default, big-chicken is imported.
-      This parameter may be provided multiple times and only makes sense
-      when --eval is used.
+      Import a CHICKEN extension.  By default, chicken.irregex is
+      imported.  This parameter may be provided multiple times and only
+      makes sense when --eval is used.
 
     --finalizer | -f <exp>
       Scheme expression to be evaluated after the whole input has been

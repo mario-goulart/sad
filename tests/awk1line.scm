@@ -121,7 +121,8 @@
 ;;  awk '{for (i=1; i<=NF; i++) $i = ($i < 0) ? -$i : $i; print }'
 (test-sad "print every line after replacing each field with its absolute value"
           "seq -2 0 | awk '{for (i=1; i<=NF; i++) if ($i < 0) $i = -$i; print }'"
-          "seq -2 0 | sad eval '(print (string-intersperse (map (compose number->string abs string->number) (COLS))))'")
+          "seq -2 0 | sad eval -R chicken.string \
+                         '(print (string-intersperse (map (compose number->string abs string->number) (COLS))))'")
 
 ;;  # print the total number of fields ("words") in all lines
 ;;  awk '{ total = total + NF }; END {print total}' file

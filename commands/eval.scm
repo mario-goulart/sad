@@ -4,7 +4,7 @@ eval <options> <exp>
   Evaluate the Scheme expression <exp>.  The `INPUT' and `LINENO'
   variables are bound to the given input and to the line number in the
   evaluation context, respectively.  <exp> is implicitly placed in a
-  `begin' form.  The big-chicken egg is implicitly imported in the
+  `begin' form.  The chicken.irregex unit implicitly imported in the
   evaluation context.
 
   <options>:
@@ -16,8 +16,8 @@ eval <options> <exp>
       Assume inputs are sexps.
 
     --require-extension | -R <extension>
-      Import a CHICKEN extension.  By default, big-chicken is imported.
-      This parameter may be provided multiple times.
+      Import a CHICKEN extension.  By default, chicken.irregex is
+      imported.  This parameter may be provided multiple times.
 
     --finalizer | -f <exp>
       Scheme expression to be evaluated after the whole input has been

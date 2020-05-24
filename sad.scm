@@ -229,9 +229,7 @@
   (let ((res/new-bindings
          (eval
           `(begin
-             (import big-chicken)
              (import ,@extensions)
-             ;; big-chicken until and including 1.0 didn't export irregex
              (import (chicken irregex))
              (let* ((INPUT (quote ,input))
                     (LINENO (quote ,lineno))
