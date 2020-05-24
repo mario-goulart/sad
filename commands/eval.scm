@@ -12,6 +12,12 @@ eval <options> <exp>
       Bind <variable> to <value> in the execution context of <exp>.
       This parameter may be provided multiple times.
 
+    --split-pattern <split pattern>
+      Regular expression to be used to split columns.
+
+    --sre | -S
+      Indicate that the argument for --split-pattern is an SRE.
+
     --read-sexp | -r
       Assume inputs are sexps.
 
