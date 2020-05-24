@@ -34,9 +34,7 @@ filter [<options>] <pattern>
       Write sexps.
 
     --sre | -S
-      When --eval is not used, indicate that <pattern> uses SRE syntax.
-      When --eval is used, indicate that the argument for --split-pattern
-      uses SRE syntax.
+      Indicate that regular expressions are in SRE syntax.
 
     --split-pattern <split pattern>
       Regular expression to be used to split columns in lines when --eval
