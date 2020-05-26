@@ -250,7 +250,7 @@
                                   cols)))))
                (let* (,@bindings)
                  (cons
-                  ,@(with-input-from-string exp read-list)
+                  (list ,@(with-input-from-string exp read-list))
                   (list ,@(map car bindings)))))))))
     (cons (car res/new-bindings)
           (map list (map car bindings) (cdr res/new-bindings)))))
