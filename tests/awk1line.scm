@@ -430,31 +430,63 @@
 ;;  awk '$5 == "abc123"'
 (test-sad "print any line where field #5 is equal to 'abc123'"
           "(echo '1 2 3 4 abc123'; echo '1 2 3 4 5') | awk '$5 == \"abc123\"'"
-          "(echo '1 2 3 4 abc123'; echo '1 2 3 4 5') | sad eval '(when (equal? (COLS 4) \"abc123\") (print INPUT))'")
-
-;; TODO from here
+          "(echo '1 2 3 4 abc123'; echo '1 2 3 4 5') |\
+           sad eval '(when (equal? (COLS 4) \"abc123\") (print INPUT))'")
 
 ;;  # print only those lines where field #5 is NOT equal to "abc123"
 ;;  # This will also print lines which have less than 5 fields.
 ;;  awk '$5 != "abc123"'
 ;;  awk '!($5 == "abc123")'
-;;
+(test-sad "print any line where field #5 is NOT equal to 'abc123'"
+          "(echo '1 2 3 4 abc123'; echo '1 2 3 4 5') | awk '$5 != \"abc123\"'"
+          "(echo '1 2 3 4 abc123'; echo '1 2 3 4 5') |\
+           sad eval '(unless (equal? (COLS 4) \"abc123\") (print INPUT))'")
+
 ;;  # matching a field against a regular expression
 ;;  awk '$7  ~ /^[a-f]/'    # print line if field #7 matches regex
+(test-sad "print line if field #7 matches regex"
+          "(echo '1 2 3 4 5 6 a'; echo '1 2 3 4 5') | awk '$7 ~ /^[a-f]/'"
+          "(echo '1 2 3 4 5 6 a'; echo '1 2 3 4 5') |\
+           sad eval '(when (irregex-match \"^[a-f]\" (COLS 6)) (print INPUT))'")
+
 ;;  awk '$7 !~ /^[a-f]/'    # print line if field #7 does NOT match regex
-;;
+(test-sad "print line if field #7 does NOT match regex"
+          "(echo '1 2 3 4 5 6 a'; echo '1 2 3 4 5') | awk '$7 !~ /^[a-f]/'"
+          "(echo '1 2 3 4 5 6 a'; echo '1 2 3 4 5') |\
+           sad eval '(unless (irregex-match \"^[a-f]\" (COLS 6)) (print INPUT))'")
+
 ;;  # print the line immediately before a regex, but not the line
 ;;  # containing the regex
 ;;  awk '/regex/{print x};{x=$0}'
 ;;  awk '/regex/{print (NR==1 ? "match on line 1" : x)};{x=$0}'
-;;
+(test-sad "print the line immediately before a regex, but not the line containing the regex"
+          "(echo foo; echo bar; echo afoo) | awk '/foo/{print (NR==1 ? \"match on line 1\" : x)};{x=$0}'"
+          "(echo foo; echo bar; echo afoo) |\
+           sad eval -b prev '#f' \
+            '(when (irregex-search \"foo\" INPUT) (print (or prev \"match on line 1\"))) (set! prev INPUT)'")
+
 ;;  # print the line immediately after a regex, but not the line
 ;;  # containing the regex
 ;;  awk '/regex/{getline;print}'
+;; (test-sad "print the line immediately after a regex, but not the line containing the regex"
+;;           "The awk example is broken"
+;;           "(echo foo; echo bar; echo afoo) |\
+;;            sad buffer 2 |\
+;;            sad eval -r '(when (and (not (null? (cdr INPUT))))\
+;;                           (irregex-search \"foo\" (car INPUT)) (print (cadr INPUT)))'")
 ;;
 ;;  # grep for AAA and BBB and CCC (in any order on the same line)
 ;;  awk '/AAA/ && /BBB/ && /CCC/'
-;;
+(test-sad "grep for AAA and BBB and CCC (in any order on the same line)"
+          "(echo 1 2 3; echo BBB AAA CCC) | awk '/AAA/ && /BBB/ && /CCC/'"
+          "(echo 1 2 3; echo BBB AAA CCC) |\
+           sad eval -R srfi-1 \
+           '(when (every (lambda (p) (irregex-search p INPUT))\
+              (quote (\"AAA\" \"BBB\" \"CCC\"))) (print INPUT))'")
+
+
+;; TODO from here
+
 ;;  # grep for AAA and BBB and CCC (in that order)
 ;;  awk '/AAA.*BBB.*CCC/'
 ;;
