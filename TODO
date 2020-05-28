@@ -6,7 +6,7 @@
 ## New params
 
 * cols: when sep is "", operate on chars
-
+* lines: regexes as ranges
 
 ## Misc
 * use utf8 and slice-utf8

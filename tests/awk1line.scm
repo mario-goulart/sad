@@ -468,13 +468,13 @@
 ;;  # print the line immediately after a regex, but not the line
 ;;  # containing the regex
 ;;  awk '/regex/{getline;print}'
-;; (test-sad "print the line immediately after a regex, but not the line containing the regex"
-;;           "The awk example is broken"
-;;           "(echo foo; echo bar; echo afoo) |\
-;;            sad buffer 2 |\
-;;            sad eval -r '(when (and (not (null? (cdr INPUT))))\
-;;                           (irregex-search \"foo\" (car INPUT)) (print (cadr INPUT)))'")
-;;
+(test-sad "print the line immediately after a regex, but not the line containing the regex"
+          "(echo foo; echo bar; echo afoo) | awk '/foo/{if(getline) print}'"
+          "(echo foo; echo bar; echo afoo) |\
+           sad buffer 2 |\
+           sad eval -r '(when (and (not (null? (cdr INPUT))))\
+                          (irregex-search \"foo\" (car INPUT)) (print (cadr INPUT)))'")
+
 ;;  # grep for AAA and BBB and CCC (in any order on the same line)
 ;;  awk '/AAA/ && /BBB/ && /CCC/'
 (test-sad "grep for AAA and BBB and CCC (in any order on the same line)"
@@ -484,48 +484,81 @@
            '(when (every (lambda (p) (irregex-search p INPUT))\
               (quote (\"AAA\" \"BBB\" \"CCC\"))) (print INPUT))'")
 
-
-;; TODO from here
-
 ;;  # grep for AAA and BBB and CCC (in that order)
 ;;  awk '/AAA.*BBB.*CCC/'
-;;
+(test-sad "grep for AAA and BBB and CCC (in that order)"
+          "(echo 1 2 3; echo AAA BBB CCC) | awk '/AAA.*BBB.*CCC/'"
+          "(echo 1 2 3; echo AAA BBB CCC) | sad filter 'AAA.*BBB.*CCC'")
+
 ;;  # print only lines of 65 characters or longer
 ;;  awk 'length > 64'
-;;
+(test-sad "print only lines of 65 characters or longer"
+          "(echo a; echo aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa) |\
+           awk 'length > 64'"
+          "(echo a; echo aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa) |\
+          sad filter '.{65}'")
+
 ;;  # print only lines of less than 65 characters
 ;;  awk 'length < 64'
-;;
+(test-sad "print only lines of less than 65 characters"
+          "(echo a; echo aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa) |\
+           awk 'length < 64'"
+          "(echo a; echo aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa) |\
+          sad filter -d '.{64}'")
+
 ;;  # print section of file from regular expression to end of file
 ;;  awk '/regex/,0'
 ;;  awk '/regex/,EOF'
-;;
+
+;; TODO
+
 ;;  # print section of file based on line numbers (lines 8-12, inclusive)
 ;;  awk 'NR==8,NR==12'
-;;
+(test-sad "print section of file based on line numbers (lines 8-12, inclusive)"
+          "seq 20 | awk 'NR==8,NR==12'"
+          "seq 20 | sad lines 7:12")
+
 ;;  # print line number 52
 ;;  awk 'NR==52'
 ;;  awk 'NR==52 {print;exit}'          # more efficient on large files
-;;
+(test-sad "print line number 52"
+          "seq 70 | awk 'NR==52'"
+          "seq 70 | sad lines 51")
+
 ;;  # print section of file between two regular expressions (inclusive)
 ;;  awk '/Iowa/,/Montana/'             # case sensitive
+
+;; TODO
 
 (test-end "SELECTIVE PRINTING OF CERTAIN LINES")
 
 
+(test-begin "SELECTIVE DELETION OF CERTAIN LINES")
 ;; SELECTIVE DELETION OF CERTAIN LINES:
 ;;
 ;;  # delete ALL blank lines from a file (same as "grep '.' ")
 ;;  awk NF
 ;;  awk '/./'
-;;
+(test-sad "delete ALL blank lines from a file (same as \"grep '.' \")"
+          "(echo a; echo; echo b) | awk NF"
+          "(echo a; echo; echo b) | sad filter .")
+
 ;;  # remove duplicate, consecutive lines (emulates "uniq")
 ;;  awk 'a !~ $0; {a=$0}'
-;;
+(test-sad "remove duplicate, consecutive lines (emulates 'uniq')"
+          "(echo a; echo a; echo b) | awk 'a !~ $0; {a=$0}'"
+          "(echo a; echo a; echo b) | \
+           sad eval -b prev '#f' '(unless (equal? INPUT prev) (print INPUT)) (set! prev INPUT)'")
+
 ;;  # remove duplicate, nonconsecutive lines
 ;;  awk '!a[$0]++'                     # most concise script
 ;;  awk '!($0 in a){a[$0];print}'      # most efficient script
-;;
+(test-sad "remove duplicate, nonconsecutive lines"
+          "(echo a; echo b; echo a) | awk '!a[$0]++'"
+          "(echo a; echo b; echo a) | sad buffer |\
+           sad eval -R srfi-1 -r '(for-each print (delete-duplicates INPUT))'")
+
+(test-end "SELECTIVE DELETION OF CERTAIN LINES")
 ;;
 ;; CREDITS AND THANKS:
 ;;
