@@ -1,0 +1,7 @@
+*.o
+*.so
+*.link
+*.install.sh
+*.build.sh
+*.import.*
+sad-cmd
