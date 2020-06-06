@@ -22,6 +22,7 @@
  in-range?
  list-slice
  eval-scheme
+ read-stdin-sexp
  )
 
 (import scheme)

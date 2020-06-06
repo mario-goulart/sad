@@ -12,7 +12,7 @@
         (chicken sort)
         (chicken string))
 (import sad)
-(import format optimism srfi-1 srfi-13 slice) ;; FIXME: remove slice?
+(import format natural-sort optimism srfi-1 srfi-13 slice) ;; FIXME: remove slice?
 
 (include "commands/buffer.scm")
 (include "commands/cols.scm")
@@ -21,6 +21,7 @@
 (include "commands/format.scm")
 (include "commands/lines.scm")
 (include "commands/replace.scm")
+(include "commands/sort.scm")
 (include "commands/split.scm")
 
 (let ((user-conf

@@ -1,8 +1,3 @@
-## New commands:
-
-* sort
-
-
 ## New params
 
 * cols: when sep is "", operate on chars

@@ -4,7 +4,7 @@
  (author "Mario Domenech Goulart")
  (category tools)
  (license "BSD")
- (dependencies format optimism slice srfi-1 srfi-13)
+ (dependencies format natural-sort optimism slice srfi-1 srfi-13)
  (test-dependencies test)
  (components
   (extension sad)
@@ -19,5 +19,6 @@
             "commands/format.scm"
             "commands/lines.scm"
             "commands/replace.scm"
+            "commands/sort.scm"
             "commands/split.scm"
             ))))

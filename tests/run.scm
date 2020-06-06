@@ -20,6 +20,8 @@
 (test-group "sed1line"
   (include "sed1line.scm"))
 
+(test-group "sort"
+  (include "sort-density.scm"))
 
 (test-end "sad")
 
