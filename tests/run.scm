@@ -17,6 +17,10 @@
 (test-group "awk1line"
   (include "awk1line.scm"))
 
+(test-group "sed1line"
+  (include "sed1line.scm"))
+
+
 (test-end "sad")
 
 (test-exit)
