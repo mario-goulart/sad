@@ -53,8 +53,8 @@
 ;;  # often treated as non-blank, and thus 'NF' alone will return TRUE.
 ;;  awk 'NF{print $0 "\n"}'
 (test-sad "double space a file which already has blank lines in it"
-          "seq 3 | awk 'NF{print $0 \"\\n\"}'"
-          "seq 3 | sad eval -R srfi-13 '(print (string-trim-right INPUT) \"\n\")'")
+          "printf 'a\n\nb\n\nc' | awk 'NF{print $0 \"\\n\"}'"
+          "printf 'a\n\nb\n\nc' | sad filter -d ^$ | sad eval '(print INPUT \"\n\")'")
 
 ;;  # triple space a file
 ;;  awk '1;{print "\n"}'
