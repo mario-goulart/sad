@@ -24,7 +24,7 @@ split [<options>] [<pattern>]
       (let ((pattern (if pattern
                          (if use-sre?
                              (with-input-from-string pattern read)
-                             pattern)
+                             `(: ,pattern))
                          'blank)))
         (for-each-line
          (lambda (line lineno)
