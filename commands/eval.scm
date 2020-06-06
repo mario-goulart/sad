@@ -1,5 +1,4 @@
-(define-command 'eval
-  "\
+(define-command 'eval "\
 eval <options> <exp>
   Evaluate the Scheme expression <exp>.  The `INPUT' and `LINENO'
   variables are bound to the given input and to the line number in the
@@ -37,8 +36,7 @@ eval <options> <exp>
     --not-match | -n <pattern>
       Only apply <exp> to lines which do NOT match <pattern> (a regular
       expression).  Lines that match <pattern> are just printed.
-      --not-match and --read-sexp are mutually exclusive.
-"
+      --not-match and --read-sexp are mutually exclusive."
   (lambda args*
     (let* ((args (parse-command-line
                   args*

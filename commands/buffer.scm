@@ -1,5 +1,4 @@
-(define-command 'buffer
-  "\
+(define-command 'buffer "\
 buffer [<options>] [<number of lines>]
   Accumulate <number of lines> (a positive integer) and then dump
   them as sexps.  If <number of lines> is not provided, buffer all
@@ -7,8 +6,7 @@ buffer [<options>] [<number of lines>]
 
   <options>:
     --read-sexp | -r
-      Assume inputs are sexps.
-"
+      Assume inputs are sexps."
   (lambda args*
     (let* ((args (parse-command-line
                   args*

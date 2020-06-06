@@ -1,5 +1,4 @@
-(define-command 'cols
-  "\
+(define-command 'cols "\
 cols [<options>] <range> [<range> ...]
   Select columns based on ranges.  Input is expected to be a Scheme list.
 
@@ -19,8 +18,7 @@ cols [<options>] <range> [<range> ...]
 
     --joiner | -j
       String to use to join columns when printing (except when
-      --write-sexp is given)  The default value is a space.
-"
+      --write-sexp is given)  The default value is a space."
   (lambda args*
     (let* ((args (parse-command-line
                   args*

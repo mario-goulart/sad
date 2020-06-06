@@ -1,5 +1,4 @@
-(define-command 'lines
-  "\
+(define-command 'lines "\
 lines <range> [<range> ...]
   Select lines by number or range.  Syntax of ranges:
   * `<number>': a single line whose index is <number>
@@ -12,8 +11,7 @@ lines <range> [<range> ...]
       Delete the lines in the given ranges.
 
     --read-sexp | -r
-      Assume inputs are sexps.
-"
+      Assume inputs are sexps."
   (lambda args*
     (let* ((args (parse-command-line
                   args*

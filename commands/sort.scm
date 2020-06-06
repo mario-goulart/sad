@@ -1,5 +1,4 @@
-(define-command 'sort
-  "\
+(define-command 'sort "\
 sort [<options>]
   Sort the input, which is expected to be sexps.  When no option
   is provided, it sorts the car of the inputs according to
@@ -21,8 +20,7 @@ sort [<options>]
       Reverse results.
 
     --eval | -e
-      Indicate that CRITERIA for --criteria is a sexp.
-"
+      Indicate that CRITERIA for --criteria is a sexp."
   (lambda args*
     (let* ((args (parse-command-line
                   args*

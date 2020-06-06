@@ -1,5 +1,4 @@
-(define-command 'split
-  "\
+(define-command 'split "\
 split [<options>] [<pattern>]
   Split the input according to <pattern> (a regular expression) and
   output a Scheme list of strings.  If <pattern> is not provided,
@@ -7,8 +6,7 @@ split [<options>] [<pattern>]
 
   <options>:
     --sre | -S
-      Indicate that the argument to --pattern is an SRE.
-"
+      Indicate that the argument to --pattern is an SRE."
   (lambda args*
     (let* ((args (parse-command-line
                   args*

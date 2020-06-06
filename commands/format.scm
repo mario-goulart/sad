@@ -1,11 +1,8 @@
-(define-command 'format
-  "\
+(define-command 'format "\
 format [<options>] <format>
   Format items of the input the specified format.  The input must
   be a Scheme list which will be given, alongside with the <format>
-  string, as argument to the `format' procedure of the `format' egg.
-
-"
+  string, as argument to the `format' procedure of the `format' egg."
   (lambda args*
     (let* ((args (parse-command-line
                   args*

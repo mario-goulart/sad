@@ -1,5 +1,4 @@
-(define-command 'replace
-  "\
+(define-command 'replace "\
 replace [<options>] <pattern> <replacement>
   Replace strings matching <pattern> with <replacement> in the input.
 
@@ -18,8 +17,7 @@ replace [<options>] <pattern> <replacement>
     --not-match | -n <not match pattern>
       Only replace in lines which which do NOT match <not match pattern>
       (a regular expression).  Lines that match <not match pattern> are
-      just printed.
-"
+      just printed."
   (lambda args*
     (let* ((args (parse-command-line
                   args*

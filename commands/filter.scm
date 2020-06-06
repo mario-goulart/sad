@@ -1,5 +1,4 @@
-(define-command 'filter
-  "\
+(define-command 'filter "\
 filter [<options>] <pattern>
   filter lines matching <pattern> (a regular expression or a Scheme
   expression when --eval or --read-sexp is given).
@@ -41,8 +40,7 @@ filter [<options>] <pattern>
       is used.
 
     --stop-after-matches | -n <num matches>
-      Stop after reaching any matches.
-  "
+      Stop after reaching any matches."
   (lambda args*
     (let* ((args (parse-command-line
                   args*
