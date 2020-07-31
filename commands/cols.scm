@@ -18,7 +18,7 @@ cols [<options>] <range> [<range> ...]
 
     --joiner | -j
       String to use to join columns when printing (except when
-      --write-sexp is given)  The default value is a space."
+      --write-sexp is given).  The default value is a space."
   (lambda args*
     (let* ((args (parse-command-line
                   args*
