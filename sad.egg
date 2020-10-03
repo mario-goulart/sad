@@ -15,6 +15,7 @@
             "commands/buffer.scm"
             "commands/cols.scm"
             "commands/eval.scm"
+            "commands/extract.scm"
             "commands/filter.scm"
             "commands/format.scm"
             "commands/lines.scm"
