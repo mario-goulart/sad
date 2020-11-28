@@ -6,7 +6,6 @@
 ## Misc
 * use utf8 and slice-utf8
 * remove format?
-* -R: modules to be loaded by eval
 
 ## Links
 
