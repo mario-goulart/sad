@@ -4,7 +4,7 @@ filter [<options>] <pattern>
   expression when --eval or --read-sexp is given).
 
   <options>:
-    --delete | -e
+    --delete | -d
       Delete lines that match <pattern>.
 
     --eval | -e
