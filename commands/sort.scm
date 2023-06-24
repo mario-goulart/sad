@@ -21,7 +21,7 @@ sort [<options>]
 
     --eval | -e
       Indicate that CRITERIA for --criteria is a sexp."
-  (lambda args*
+  (lambda (args*)
     (let* ((args (parse-command-line
                   args*
                   '(((--help -help -h))
@@ -59,8 +59,6 @@ sort [<options>]
                 (lambda (l)
                   (list-ref l colnum))))
            (reverse? (get-opt '(--reverse -r) args flag?: #t)))
-
-      (handle-command-help 'sort args)
 
       (let ((results
              (sort

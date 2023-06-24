@@ -12,7 +12,7 @@
         (chicken sort)
         (chicken string))
 (import sad)
-(import format natural-sort optimism srfi-1 srfi-13 slice) ;; FIXME: remove slice?
+(import commands format natural-sort optimism srfi-1 srfi-13 slice) ;; FIXME: remove slice?
 
 (include "commands/buffer.scm")
 (include "commands/cols.scm")
@@ -30,32 +30,17 @@
   (when (file-exists? user-conf)
     (load user-conf)))
 
-(define (usage #!optional exit-code)
-  (let ((out (if (and exit-code (not (zero? exit-code)))
-                 (current-error-port)
-                 (current-output-port))))
-    (fprintf out "Usage: ~a [-h|-help|--help] <command> [<command args>]\n"
-             (pathname-file (program-name)))
-    (fprintf out "\n<command>s are:\n")
-    (for-each (lambda (command)
-                (fprintf out "\n~a\n" (command-help (get-command command))))
-              (map string->symbol
-                   (sort (map (compose symbol->string car) (get-commands))
-                         string<)))
-    (when exit-code
-      (exit exit-code))))
-
 (let ((args (command-line-arguments)))
 
   (when (null? args)
-    (usage 1))
+    (show-main-help 1))
 
   (when (member (car args) '("-h" "-help" "--help"))
-    (usage 0))
+    (show-main-help 0))
 
   (or (and-let* ((cmd (string->symbol (car args)))
-                 (handler (alist-ref cmd (get-commands))))
-        (apply (command-proc handler) (cdr args)))
+                 (handler (alist-ref cmd (commands))))
+        ((command-proc handler) (cdr args)))
       (die! "Invalid command: ~a" (car args))))
 
 ) ;; end module

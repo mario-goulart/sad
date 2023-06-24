@@ -41,7 +41,7 @@ filter [<options>] <pattern>
 
     --stop-after-matches | -n <num matches>
       Stop after reaching any matches."
-  (lambda args*
+  (lambda (args*)
     (let* ((args (parse-command-line
                   args*
                   `(((--help -help -h))
@@ -70,8 +70,6 @@ filter [<options>] <pattern>
            (split-pattern (get-opt '(--split-pattern -s) args))
            (pattern (and-let* ((p (get-opt '(--) args)))
                       (and (not (null? p)) (car p)))))
-
-      (handle-command-help 'filter args)
 
       (when (and use-sre? use-eval?)
         (die! "filter: --sre and --eval cannot be used together."))

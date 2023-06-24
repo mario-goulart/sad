@@ -1,13 +1,6 @@
 (module sad
 
-(define-command
- get-command
- get-commands
- handle-command-help
- command-name
- command-help
- command-proc
- for-each-line
+(for-each-line
  for-each-sexp
  for-each-input
  list-ref*
@@ -33,21 +26,6 @@
         (chicken irregex)
         (chicken port))
 (import slice srfi-1)
-
-(define *commands* '())
-
-(define-record command name help proc)
-
-(define (define-command name help proc)
-  (set! *commands*
-    (cons (cons name (make-command name help proc))
-          *commands*)))
-
-(define (get-commands)
-  *commands*)
-
-(define (get-command command)
-  (alist-ref command *commands*))
 
 (define (read-stdin-line)
   (with-input-from-port (current-input-port) read-line))
@@ -91,11 +69,6 @@
     (if (< idx 0)
         (list-ref (reverse lst) (abs (+ idx 1)))
         (list-ref lst idx))))
-
-(define (handle-command-help command parsed-args)
-  (when (get-opt '(--help -help -h) parsed-args flag?: #t)
-    (print (command-help (get-command command)))
-    (exit 0)))
 
 (define (get-opt options parsed-args #!key multiple? flag?)
   (cond (multiple?

@@ -7,7 +7,7 @@ buffer [<options>] [<number of lines>]
   <options>:
     --read-sexp | -r
       Assume inputs are sexps."
-  (lambda args*
+  (lambda (args*)
     (let* ((args (parse-command-line
                   args*
                   '(((--help -help -h))
@@ -17,8 +17,6 @@ buffer [<options>] [<number of lines>]
             (and-let* ((n (get-opt '(--) args)))
               (and (not (null? n)) (car n))))
            (num-lines (and num-lines% (string->number num-lines%))))
-
-      (handle-command-help 'buffer args)
 
       (when (and num-lines% (not num-lines))
         (die! "buffer: expected a positive integer, got ~a." num-lines%))

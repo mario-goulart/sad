@@ -7,15 +7,13 @@ extract [<options>] <pattern>
   <options>:
     --sre | -S
       Indicate that <pattern> uses SRE syntax."
-  (lambda args*
+  (lambda (args*)
     (let* ((args (parse-command-line
                   args*
                   `(((--help -help -h))
                     ((--sre -S)))))
            (use-sre? (get-opt '(--sre -S) args flag?: #t))
            (pattern (get-opt '(--) args)))
-
-      (handle-command-help 'extract args)
 
       (when (null? pattern)
         (die! "extract: missing <pattern>."))

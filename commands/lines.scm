@@ -12,7 +12,7 @@ lines <range> [<range> ...]
 
     --read-sexp | -r
       Assume inputs are sexps."
-  (lambda args*
+  (lambda (args*)
     (let* ((args (parse-command-line
                   args*
                   '(((--help -help -h))
@@ -23,8 +23,6 @@ lines <range> [<range> ...]
            (read-sexp? (get-opt '(--read-sexp -r) args flag?: #t))
            (ranges (parse-ranges 'lines (get-opt '(--) args)))
            (buffer '()))
-
-      (handle-command-help 'lines args)
 
       (when (null? ranges)
         (die! "lines: missing range specification"))

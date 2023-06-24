@@ -18,7 +18,7 @@ replace [<options>] <pattern> <replacement>
       Only replace in lines which which do NOT match <not match pattern>
       (a regular expression).  Lines that match <not match pattern> are
       just printed."
-  (lambda args*
+  (lambda (args*)
     (let* ((args (parse-command-line
                   args*
                   `(((--help -help -h))
@@ -41,8 +41,6 @@ replace [<options>] <pattern> <replacement>
                      (string->sre not-match-pattern%))))
            (replace-all? (get-opt '(--all -a) args flag?: #t))
            (pattern/replacement (get-opt '(--) args)))
-
-      (handle-command-help 'replace args)
 
       (unless (= (length pattern/replacement) 2)
         (die! "replace: invalid <pattern> <replacement> specification."))

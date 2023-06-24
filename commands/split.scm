@@ -7,7 +7,7 @@ split [<options>] [<pattern>]
   <options>:
     --sre | -S
       Indicate that the argument to --pattern is an SRE."
-  (lambda args*
+  (lambda (args*)
     (let* ((args (parse-command-line
                   args*
                   '(((--help -help -h))
@@ -16,8 +16,6 @@ split [<options>] [<pattern>]
            (use-sre? (get-opt '(--sre -S) args flag?: #t))
            (pattern (and-let* ((p (get-opt '(--) args)))
                       (and (not (null? p)) (car p)))))
-
-      (handle-command-help 'split args)
 
       (let ((pattern (if pattern
                          (if use-sre?

@@ -37,7 +37,7 @@ eval <options> <exp>
       Only apply <exp> to lines which do NOT match <pattern> (a regular
       expression).  Lines that match <pattern> are just printed.
       --not-match and --read-sexp are mutually exclusive."
-  (lambda args*
+  (lambda (args*)
     (let* ((args (parse-command-line
                   args*
                   `(((--help -help -h))
@@ -73,8 +73,6 @@ eval <options> <exp>
            (split-pattern (get-opt '(--split-pattern -s) args))
            (exp (and-let* ((e (get-opt '(--) args)))
                   (and (not (null? e)) (car e)))))
-
-      (handle-command-help 'eval args)
 
       (unless exp
         (die! "eval: missing expression"))

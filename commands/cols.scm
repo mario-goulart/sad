@@ -19,7 +19,7 @@ cols [<options>] <range> [<range> ...]
     --joiner | -j
       String to use to join columns when printing (except when
       --write-sexp is given).  The default value is a space."
-  (lambda args*
+  (lambda (args*)
     (let* ((args (parse-command-line
                   args*
                   '(((--help -help -h))
@@ -31,8 +31,6 @@ cols [<options>] <range> [<range> ...]
            (write-sexp? (get-opt '(--write-sexp -w) args flag?: #t))
            (joiner (get-opt '(--joiner -j) args))
            (ranges (parse-ranges 'cols (get-opt '(--) args))))
-
-      (handle-command-help 'cols args)
 
       (when (null? ranges)
         (die! "cols: missing columns specification."))
