@@ -33,10 +33,10 @@
 (let ((args (command-line-arguments)))
 
   (when (null? args)
-    (show-main-help exit-code: 1))
+    (show-main-help 1))
 
   (when (member (car args) '("-h" "-help" "--help"))
-    (show-main-help exit-code: 0))
+    (show-main-help 0))
 
   (or (and-let* ((cmd (string->symbol (car args)))
                  (handler (alist-ref cmd (commands))))
