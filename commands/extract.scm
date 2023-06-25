@@ -1,6 +1,7 @@
 (define-command 'extract "\
 extract [<options>] <pattern>
-  Extract strings matching <pattern> in the input.  Produce a Scheme
+  Extract strings matching <pattern> in the input.  <pattern> must use the
+  syntax for grouping to indicate what must be extracted.  Produce a Scheme
   list of matches.  If named submatches are used, they are represented
   as pairs (<name> . <match>) in the output (only the first match of
   named matches are considered).
