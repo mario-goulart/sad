@@ -27,5 +27,5 @@ extract [<options>] <pattern>
            (let ((matches (irregex-search pattern line)))
              (write
               (if (irregex-match-data? matches)
-                  (irregex-match-substring matches 1)
+                  (list (irregex-match-substring matches 1))
                   '())))))))))
