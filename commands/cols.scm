@@ -16,7 +16,7 @@ cols [<options>] <range> [<range> ...]
     --write-sexp | -w
       Write sexps.
 
-    --joiner | -j
+    --joiner | -j <joiner>
       String to use to join columns when printing (except when
       --write-sexp is given).  The default value is a space."
   (lambda (args*)
@@ -25,7 +25,7 @@ cols [<options>] <range> [<range> ...]
                   '(((--help -help -h))
                     ((--delete -d))
                     ((--write-sexp -w))
-                    ((--joiner -j))
+                    ((--joiner -j) . joiner)
                     )))
            (delete? (get-opt '(--delete -d) args flag?: #t))
            (write-sexp? (get-opt '(--write-sexp -w) args flag?: #t))
