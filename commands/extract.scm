@@ -1,8 +1,9 @@
 (define-command 'extract "\
 extract [<options>] <pattern>
-  Extract strings matching <pattern> in the input.  Produces a Scheme
+  Extract strings matching <pattern> in the input.  Produce a Scheme
   list of matches.  If named submatches are used, they are represented
-  as pairs (<name> . <match>) in the output.
+  as pairs (<name> . <match>) in the output (only the first match of
+  named matches are considered).
 
   <options>:
     --sre | -S
@@ -27,5 +28,13 @@ extract [<options>] <pattern>
            (let ((matches (irregex-search pattern line)))
              (write
               (if (irregex-match-data? matches)
-                  (list (irregex-match-substring matches 1))
+                  (or (and-let* ((names (irregex-match-names matches)))
+                        (if (null? names)
+                            #f
+                            (map (lambda (submatch-name)
+                                   (cons submatch-name
+                                         (irregex-match-substring matches
+                                                                  submatch-name)))
+                                 (map car names))))
+                      (list (irregex-match-substring matches 1)))
                   '())))))))))
