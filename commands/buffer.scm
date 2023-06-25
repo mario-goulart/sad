@@ -6,7 +6,18 @@ buffer [<options>] [<number of lines>]
 
   <options>:
     --read-sexp | -r
-      Assume inputs are sexps."
+      Assume inputs are sexps.
+
+  Examples:
+
+  $ seq 9 | sad buffer 3
+  (\"1\" \"2\" \"3\")(\"4\" \"5\" \"6\")(\"7\" \"8\" \"9\")
+
+  # Select even lines
+  $ seq 6 | sad buffer 2 | sad cols 1
+  2
+  4
+  6"
   (lambda (args*)
     (let* ((args (parse-command-line
                   args*

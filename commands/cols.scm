@@ -18,7 +18,30 @@ cols [<options>] <range> [<range> ...]
 
     --joiner | -j <joiner>
       String to use to join columns when printing (except when
-      --write-sexp is given).  The default value is a space."
+      --write-sexp is given).  The default value is a space.
+
+  Examples:
+
+  $ echo 1 2 3 | sad split | sad cols 0
+  1
+
+  $ echo 1 2 3 | sad split | sad cols 1:
+  2 3
+
+  $ echo 1 2 3 | sad split | sad cols -1
+  3
+
+  $ echo 1 2 3 | sad split | sad cols :-1
+  1 2
+
+  $ echo 1 2 3 | sad split | sad cols --delete 1
+  1 3
+
+  $ echo 1 2 3 | sad split | sad cols --write-sexp :-1
+  (\"1\" \"2\")
+
+  $ echo 1 2 3 | sad split | sad cols --joiner _ :-1
+  1_2"
   (lambda (args*)
     (let* ((args (parse-command-line
                   args*

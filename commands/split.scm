@@ -6,7 +6,18 @@ split [<options>] [<pattern>]
 
   <options>:
     --sre | -S
-      Indicate that the argument to --pattern is an SRE."
+      Indicate that the argument to --pattern is an SRE.
+
+  Examples:
+
+  $ echo 1 2 3 | sad split
+  (\"1\" \"2\" \"3\")
+
+  $ echo 1_2_3 | sad split _
+  (\"1\" \"2\" \"3\")
+
+  $ echo 1_2:3 | sad split --sre '(or \"_\" \":\")'
+  (\"1\" \"2\" \"3\")"
   (lambda (args*)
     (let* ((args (parse-command-line
                   args*

@@ -8,7 +8,25 @@ extract [<options>] <pattern>
 
   <options>:
     --sre | -S
-      Indicate that <pattern> uses SRE syntax."
+      Indicate that <pattern> uses SRE syntax.
+
+  Examples:
+
+  $ (echo Line 1; echo Line 2) |
+    sad extract \".*([0-9])\" |
+    sad format \"~a~%\"
+  1
+  2
+
+  $ (echo Line 1; echo Line 2) |
+    sad extract --sre \"(: (* any) (submatch num))\" |
+    sad format \"~a~%\"
+  1
+  2
+
+  $ (echo Page 1, line 3; echo Page 2, line 9) |
+     sad extract --sre '(: \"Page \" (submatch-named page num) \", line \" (submatch-named line num))'
+  ((line . \"3\") (page . \"1\"))((line . \"9\") (page . \"2\"))"
   (lambda (args*)
     (let* ((args (parse-command-line
                   args*
