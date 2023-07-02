@@ -163,7 +163,7 @@
 ;;  awk '{ print $NF }'
 (test-sad "print the last field of each line (1)"
           "(echo a; echo a b c; echo a b) | awk '{ print $NF }'"
-          "(echo a; echo a b c; echo a b) | sad split | sad cols -w -1 | sad format \"~a~%\"")
+          "(echo a; echo a b c; echo a b) | sad split | sad cols -1 | sad join")
 
 (test-sad "print the last field of each line (2)"
           "(echo a; echo a b c; echo a b) | awk '{ print $NF }'"
@@ -177,7 +177,7 @@
 ;;  awk '{ field = $NF }; END{ print field }'
 (test-sad "print the last field of the last line"
           "(echo a; echo a b c; echo a b) | awk '{ field = $NF }; END{ print field }'"
-          "(echo a; echo a b c; echo a b) | sad lines -1 | sad split | sad cols -w -1 | sad format \"~a~%\"")
+          "(echo a; echo a b c; echo a b) | sad lines -1 | sad split | sad cols -1 | sad join")
 
 ;;  # print every line with more than 4 fields
 ;;  awk 'NF > 4'
@@ -351,13 +351,13 @@
 ;;  awk -F ":" '{print $1 | "sort" }' /etc/passwd
 (test-sad "print and sort the login names of all users"
           "cat /etc/passwd | awk -F ':' '{print $1 | \"sort\" }'"
-          "cat /etc/passwd | sad split : | sad cols 0 | sort")
+          "cat /etc/passwd | sad split : | sad cols 0 | sad join | sort")
 
 ;;  # print the first 2 fields, in opposite order, of every line
 ;;  awk '{print $2, $1}' file
 (test-sad "print the first 2 fields, in opposite order, of every line"
           "(echo 1 2; echo 3 4) | awk '{print $2, $1}'"
-          "(echo 1 2; echo 3 4) | sad split | sad cols 1 0")
+          "(echo 1 2; echo 3 4) | sad split | sad cols 1 0 | sad join")
 
 ;;  # switch the first 2 fields of every line
 ;;  awk '{temp = $1; $1 = $2; $2 = temp}' file
@@ -366,7 +366,7 @@
 ;;  awk '{ $2 = ""; print }'
 (test-sad "print every line, deleting the second field of that line"
           "(echo 1 2; echo 3 4) | awk '{ $2 = \"\"; print }'"
-          "(echo 1 2; echo 3 4) | sad split | sad cols 0 | sad replace '$' ' '")
+          "(echo 1 2; echo 3 4) | sad split | sad cols 0 | sad join | sad replace '$' ' '")
 
 ;;  # print in reverse order the fields of every linew
 ;;  awk '{for (i=NF; i>0; i--) printf("%s ",$i);print ""}' file
