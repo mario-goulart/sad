@@ -44,8 +44,7 @@ filter [<options>] <pattern>
   (lambda (args*)
     (let* ((args (parse-command-line
                   args*
-                  `(((--help -help -h))
-                    ((--delete -d))
+                  `(((--delete -d))
                     ((--eval -e))
                     ((--bind -b)
                      ,string->symbol

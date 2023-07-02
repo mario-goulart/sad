@@ -19,10 +19,7 @@ buffer [<options>] [<number of lines>]
   4
   6"
   (lambda (args*)
-    (let* ((args (parse-command-line
-                  args*
-                  '(((--help -help -h))
-                    ((--read-sexp -r)))))
+    (let* ((args (parse-command-line args* '(((--read-sexp -r)))))
            (read-sexp? (get-opt '(--read-sexp -r) args flag?: #t))
            (num-lines%
             (and-let* ((n (get-opt '(--) args)))

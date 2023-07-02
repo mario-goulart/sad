@@ -15,8 +15,7 @@ lines <range> [<range> ...]
   (lambda (args*)
     (let* ((args (parse-command-line
                   args*
-                  '(((--help -help -h))
-                    ((--delete -d))
+                  '(((--delete -d))
                     ((--read-sexp -r))
                     )))
            (delete? (get-opt '(--delete -d) args flag?: #t))

@@ -28,10 +28,7 @@ extract [<options>] <pattern>
      sad extract --sre '(: \"Page \" (submatch-named page num) \", line \" (submatch-named line num))'
   ((line . \"3\") (page . \"1\"))((line . \"9\") (page . \"2\"))"
   (lambda (args*)
-    (let* ((args (parse-command-line
-                  args*
-                  `(((--help -help -h))
-                    ((--sre -S)))))
+    (let* ((args (parse-command-line args* '(((--sre -S)))))
            (use-sre? (get-opt '(--sre -S) args flag?: #t))
            (pattern (get-opt '(--) args)))
 

@@ -21,8 +21,7 @@ split [<options>] [<pattern>]
   (lambda (args*)
     (let* ((args (parse-command-line
                   args*
-                  '(((--help -help -h))
-                    ((--sre -S))
+                  '(((--sre -S))
                     )))
            (use-sre? (get-opt '(--sre -S) args flag?: #t))
            (pattern (and-let* ((p (get-opt '(--) args)))

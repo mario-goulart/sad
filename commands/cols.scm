@@ -30,11 +30,7 @@ cols [<options>] <range> [<range> ...]
   $ echo 1 2 3 | sad split | sad cols --delete 1
   (\"1\" \"3\")"
   (lambda (args*)
-    (let* ((args (parse-command-line
-                  args*
-                  '(((--help -help -h))
-                    ((--delete -d))
-                    )))
+    (let* ((args (parse-command-line args* '(((--delete -d)))))
            (delete? (get-opt '(--delete -d) args flag?: #t))
            (ranges (parse-ranges 'cols (get-opt '(--) args))))
 

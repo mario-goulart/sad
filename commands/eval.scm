@@ -40,8 +40,7 @@ eval <options> <exp>
   (lambda (args*)
     (let* ((args (parse-command-line
                   args*
-                  `(((--help -help -h))
-                    ((--bind -b)
+                  `(((--bind -b)
                      ,string->symbol
                      ,(lambda (x) (with-input-from-string x read)))
                     ((--require-extension -R) . ,string->symbol)

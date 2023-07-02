@@ -24,8 +24,7 @@ sort [<options>]
   (lambda (args*)
     (let* ((args (parse-command-line
                   args*
-                  '(((--help -help -h))
-                    ((--column -c) . colnum)
+                  '(((--column -c) . colnum)
                     ((--criteria -C) . criteria)
                     ((--reverse -r))
                     ((--eval -e))

@@ -21,8 +21,7 @@ replace [<options>] <pattern> <replacement>
   (lambda (args*)
     (let* ((args (parse-command-line
                   args*
-                  `(((--help -help -h))
-                    ((--all -a))
+                  `(((--all -a))
                     ((--sre -S))
                     ((--match -m) . p)
                     ((--not-match -n) . p))))
