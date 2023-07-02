@@ -18,6 +18,7 @@
             "commands/extract.scm"
             "commands/filter.scm"
             "commands/format.scm"
+            "commands/join.scm"
             "commands/lines.scm"
             "commands/replace.scm"
             "commands/sort.scm"
