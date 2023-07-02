@@ -14,13 +14,13 @@ extract [<options>] <pattern>
 
   $ (echo Line 1; echo Line 2) |
     sad extract \".*([0-9])\" |
-    sad format \"~a~%\"
+    sad join
   1
   2
 
   $ (echo Line 1; echo Line 2) |
     sad extract --sre \"(: (* any) (submatch num))\" |
-    sad format \"~a~%\"
+    sad join
   1
   2
 
