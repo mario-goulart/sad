@@ -25,6 +25,7 @@
 (include "commands/sort.scm")
 (include "commands/split.scm")
 (include "commands/join.scm")
+(include "commands/apply.scm")
 
 (define sad-message "
 sad -- Scheme-Aware Ducts (\"sed makes me sad\").

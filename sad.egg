@@ -12,6 +12,7 @@
            (component-dependencies sad)
            (install-name sad)
            (source-dependencies
+            "commands/apply.scm"
             "commands/buffer.scm"
             "commands/cols.scm"
             "commands/eval.scm"
