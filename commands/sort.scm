@@ -6,7 +6,7 @@
 (import (chicken base)
         (chicken port)
         (chicken sort))
-(import commands natural-sort optimism srfi-13)
+(import commands natural-sort optimism simple-logger srfi-13)
 (import sad)
 
 (define-command 'sort "\

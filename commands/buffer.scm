@@ -4,7 +4,7 @@
 
 (import scheme)
 (import (chicken base))
-(import commands optimism)
+(import commands optimism simple-logger)
 (import sad)
 
 (define-command 'buffer "\

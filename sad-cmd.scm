@@ -12,7 +12,7 @@
         (chicken sort)
         (chicken string))
 (import sad)
-(import commands format natural-sort optimism srfi-1 srfi-13 slice) ;; FIXME: remove slice?
+(import commands optimism simple-logger)
 
 (declare (uses sad-buffer))
 (declare (uses sad-cols))

@@ -4,7 +4,7 @@
 
 (import scheme)
 (import (chicken base))
-(import commands optimism srfi-1)
+(import commands optimism simple-logger srfi-1)
 (import sad)
 
 (define-command 'lines "\

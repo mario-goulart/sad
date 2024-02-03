@@ -4,7 +4,6 @@
  for-each-sexp
  for-each-input
  list-ref*
- die!
  get-opt
  parse-ranges
  range?
@@ -25,18 +24,13 @@
         (chicken io)
         (chicken irregex)
         (chicken port))
-(import slice srfi-1)
+(import simple-logger slice srfi-1)
 
 (define (read-stdin-line)
   (with-input-from-port (current-input-port) read-line))
 
 (define (read-stdin-sexp)
   (with-input-from-port (current-input-port) read))
-
-(define (die! fmt . args)
-  (fprintf (current-error-port)
-           (apply sprintf (cons (string-append fmt "\n") args)))
-  (exit 1))
 
 (define (for-each-line proc #!key finalizer)
   (let loop ((lineno 0))

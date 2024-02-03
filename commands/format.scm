@@ -4,7 +4,7 @@
 
 (import scheme)
 (import (chicken base))
-(import commands format optimism)
+(import commands format optimism simple-logger)
 (import sad)
 
 (define-command 'format "\

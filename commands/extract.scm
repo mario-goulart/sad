@@ -6,7 +6,7 @@
 (import (chicken base)
         (chicken irregex)
         (chicken port))
-(import commands optimism)
+(import commands optimism simple-logger)
 (import sad)
 
 (define-command 'extract "\
