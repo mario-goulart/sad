@@ -100,7 +100,7 @@ filter [<options>] <pattern>
                        (eval-scheme
                         pattern bindings extensions line-or-sexp lineno spattern)))
                   (set! bindings (cdr res/bindings))
-                  (car res/bindings)))))
+                  (caar res/bindings)))))
         (for-each-input
          read-sexp?
          (lambda (sexp lineno)
