@@ -1,3 +1,13 @@
+(declare (unit sad-apply))
+
+(module sad-apply ()
+
+(import scheme)
+(import (chicken base)
+        (chicken port))
+(import commands optimism srfi-13)
+(import sad)
+
 (define-command 'apply "\
 apply <options> <op> [<converter>]
   Expect a Scheme list as input and apply <op> to the list.  <converter>
@@ -49,3 +59,5 @@ apply <options> <op> [<converter>]
                             identity
                             (eval-exp (string-trim (cadr rest))))))
         (print (apply op (map converter (read))))))))
+
+) ;; end module

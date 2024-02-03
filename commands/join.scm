@@ -1,3 +1,13 @@
+(declare (unit sad-join))
+
+(module sad-join ()
+
+(import scheme)
+(import (chicken base)
+        (chicken string))
+(import commands optimism)
+(import sad)
+
 (define-command 'join "\
 join [<joiner>]
   Join fields in the input with <joiner>.  If <joiner> is not provided,
@@ -20,3 +30,5 @@ join [<joiner>]
       (for-each-sexp
        (lambda (sexp lineno)
          (print (string-intersperse (map ->string sexp) joiner)))))))
+
+) ;; end module

@@ -1,3 +1,12 @@
+(declare (unit sad-cols))
+
+(module sad-cols ()
+
+(import scheme)
+(import (chicken base))
+(import commands optimism srfi-1)
+(import sad)
+
 (define-command 'cols "\
 cols [<options>] <range> [<range> ...]
   Select columns based on ranges.  Input is expected to be a Scheme list.
@@ -55,3 +64,5 @@ cols [<options>] <range> [<range> ...]
                                   (apply list-slice (list sexp range)))
                                 ranges))))
            (write slices)))))))
+
+) ;; end module

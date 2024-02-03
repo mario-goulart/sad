@@ -1,3 +1,14 @@
+(declare (unit sad-extract))
+
+(module sad-extract ()
+
+(import scheme)
+(import (chicken base)
+        (chicken irregex)
+        (chicken port))
+(import commands optimism)
+(import sad)
+
 (define-command 'extract "\
 extract [<options>] <pattern>
   Extract strings matching <pattern> in the input.  <pattern> must use the
@@ -54,3 +65,5 @@ extract [<options>] <pattern>
                                  (map car names))))
                       (list (irregex-match-substring matches 1)))
                   '())))))))))
+
+) ;; end module

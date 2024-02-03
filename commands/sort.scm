@@ -1,3 +1,14 @@
+(declare (unit sad-sort))
+
+(module sad-sort ()
+
+(import scheme)
+(import (chicken base)
+        (chicken port)
+        (chicken sort))
+(import commands natural-sort optimism srfi-13)
+(import sad)
+
 (define-command 'sort "\
 sort [<options>]
   Sort the input, which is expected to be sexps.  When no option
@@ -70,3 +81,5 @@ sort [<options>]
                   (if reverse?
                       (reverse results)
                       results))))))
+
+) ;; end module

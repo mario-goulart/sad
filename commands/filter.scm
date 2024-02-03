@@ -1,3 +1,14 @@
+(declare (unit sad-filter))
+
+(module sad-filter ()
+
+(import scheme)
+(import (chicken base)
+        (chicken irregex)
+        (chicken port))
+(import commands optimism)
+(import sad)
+
 (define-command 'filter "\
 filter [<options>] <pattern>
   filter lines matching <pattern> (a regular expression or a Scheme
@@ -121,3 +132,5 @@ filter [<options>] <pattern>
                           (lambda (lineno)
                             (eval-scheme
                              finalizer bindings extensions "" lineno spattern))))))))
+
+) ;; end module

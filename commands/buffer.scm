@@ -1,3 +1,12 @@
+(declare (unit sad-buffer))
+
+(module sad-buffer ()
+
+(import scheme)
+(import (chicken base))
+(import commands optimism)
+(import sad)
+
 (define-command 'buffer "\
 buffer [<options>] [<number of lines>]
   Accumulate <number of lines> (a positive integer) and then dump
@@ -47,3 +56,5 @@ buffer [<options>] [<number of lines>]
                   (set! lines-or-sexps (cons line-or-sexp lines-or-sexps)))))
          finalizer: (lambda (lineno)
                       (write (reverse lines-or-sexps))))))))
+
+) ;; end module

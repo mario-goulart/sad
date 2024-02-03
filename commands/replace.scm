@@ -1,3 +1,14 @@
+(declare (unit sad-replace))
+
+(module sad-replace ()
+
+(import scheme)
+(import (chicken base)
+        (chicken irregex)
+        (chicken port))
+(import commands optimism)
+(import sad)
+
 (define-command 'replace "\
 replace [<options>] <pattern> <replacement>
   Replace strings matching <pattern> with <replacement> in the input.
@@ -58,3 +69,5 @@ replace [<options>] <pattern> <replacement>
                       (not (irregex-search not-match-pattern line))))
              (print (replacer pattern line replacement))
              (print line))))))))
+
+) ;; end module

@@ -1,3 +1,14 @@
+(declare (unit sad-split))
+
+(module sad-split ()
+
+(import scheme)
+(import (chicken base)
+        (chicken irregex)
+        (chicken port))
+(import commands optimism)
+(import sad)
+
 (define-command 'split "\
 split [<options>] [<pattern>]
   Split the input according to <pattern> (a regular expression) and
@@ -35,3 +46,5 @@ split [<options>] [<pattern>]
         (for-each-line
          (lambda (line lineno)
            (write (irregex-split pattern line))))))))
+
+) ;; end module

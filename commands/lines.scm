@@ -1,3 +1,12 @@
+(declare (unit sad-lines))
+
+(module sad-lines ()
+
+(import scheme)
+(import (chicken base))
+(import commands optimism srfi-1)
+(import sad)
+
 (define-command 'lines "\
 lines <range> [<range> ...]
   Select lines by number or range.  Syntax of ranges:
@@ -63,3 +72,5 @@ lines <range> [<range> ...]
                    (set! buffer (cons line-or-sexp buffer))
                    (dump! lineno))))
          finalizer: dump!)))))
+
+) ;; end module

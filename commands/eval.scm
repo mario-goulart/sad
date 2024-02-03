@@ -1,3 +1,14 @@
+(declare (unit sad-eval))
+
+(module sad-eval ()
+
+(import scheme)
+(import (chicken base)
+        (chicken irregex)
+        (chicken port))
+(import commands optimism)
+(import sad)
+
 (define-command 'eval "\
 eval <options> <exp>
   Evaluate the Scheme expression <exp>.  The `INPUT' and `LINENO'
@@ -101,3 +112,5 @@ eval <options> <exp>
                          (lambda (lineno)
                            (eval-scheme
                             finalizer bindings extensions "" lineno pattern))))))))
+
+) ;; end module

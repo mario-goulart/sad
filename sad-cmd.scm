@@ -14,18 +14,18 @@
 (import sad)
 (import commands format natural-sort optimism srfi-1 srfi-13 slice) ;; FIXME: remove slice?
 
-(include "commands/buffer.scm")
-(include "commands/cols.scm")
-(include "commands/eval.scm")
-(include "commands/extract.scm")
-(include "commands/filter.scm")
-(include "commands/format.scm")
-(include "commands/lines.scm")
-(include "commands/replace.scm")
-(include "commands/sort.scm")
-(include "commands/split.scm")
-(include "commands/join.scm")
-(include "commands/apply.scm")
+(declare (uses sad-buffer))
+(declare (uses sad-cols))
+(declare (uses sad-eval))
+(declare (uses sad-extract))
+(declare (uses sad-filter))
+(declare (uses sad-format))
+(declare (uses sad-lines))
+(declare (uses sad-replace))
+(declare (uses sad-sort))
+(declare (uses sad-split))
+(declare (uses sad-join))
+(declare (uses sad-apply))
 
 (define sad-message "
 sad -- Scheme-Aware Ducts (\"sed makes me sad\").

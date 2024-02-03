@@ -1,3 +1,12 @@
+(declare (unit sad-format))
+
+(module sad-format ()
+
+(import scheme)
+(import (chicken base))
+(import commands format optimism)
+(import sad)
+
 (define-command 'format "\
 format [<options>] <format>
   Format items of the input the specified format.  The input must
@@ -14,3 +23,5 @@ format [<options>] <format>
       (for-each-sexp
        (lambda (sexp lineno)
          (apply format (cons #t (cons format-string sexp))))))))
+
+) ;; end module
