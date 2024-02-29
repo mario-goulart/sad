@@ -11,7 +11,7 @@
 (define-command 'apply "\
 apply <options> <op> [<converter>]
   Expect a Scheme list as input and apply <op> to the list.  <converter>
-  defaults to `identity' and will ll be applied to all elements of the
+  defaults to `identity' and will be applied to all elements of the
   input list before the application of <op>.
 
   sad apply <op> <converter>
