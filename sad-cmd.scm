@@ -27,6 +27,7 @@
 (declare (uses sad-join))
 (declare (uses sad-apply))
 (declare (uses sad-plus))
+(declare (uses sad-times))
 
 (define sad-message "
 sad -- Scheme-Aware Ducts (\"sed makes me sad\").
