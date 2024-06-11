@@ -15,6 +15,7 @@
  list-slice
  eval-scheme
  read-stdin-sexp
+ read-numbers
  )
 
 (import scheme)
@@ -23,7 +24,8 @@
         (chicken format)
         (chicken io)
         (chicken irregex)
-        (chicken port))
+        (chicken port)
+        (chicken string))
 (import simple-logger slice srfi-1)
 
 (define (read-stdin-line)
@@ -31,6 +33,15 @@
 
 (define (read-stdin-sexp)
   (with-input-from-port (current-input-port) read))
+
+(define (read-numbers)
+  ;; Read from stdin and return a list of numbers.  Expect a list as
+  ;; input.
+  (filter-map (lambda (item)
+                (if (number? item)
+                    item
+                    (string->number (->string item))))
+              (read)))
 
 (define (for-each-line proc #!key finalizer)
   (let loop ((lineno 0))
