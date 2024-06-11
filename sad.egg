@@ -17,6 +17,7 @@
   (c-object sad-format  (source "commands/format.scm")  (component-dependencies sad))
   (c-object sad-join    (source "commands/join.scm")    (component-dependencies sad))
   (c-object sad-lines   (source "commands/lines.scm")   (component-dependencies sad))
+  (c-object sad-map     (source "commands/map.scm")     (component-dependencies sad))
   (c-object sad-plus    (source "commands/plus.scm")    (component-dependencies sad))
   (c-object sad-replace (source "commands/replace.scm") (component-dependencies sad))
   (c-object sad-sort    (source "commands/sort.scm")    (component-dependencies sad))
@@ -33,6 +34,7 @@
                     sad-format
                     sad-join
                     sad-lines
+                    sad-map
                     sad-plus
                     sad-replace
                     sad-sort

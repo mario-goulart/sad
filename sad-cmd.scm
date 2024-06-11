@@ -28,6 +28,7 @@
 (declare (uses sad-apply))
 (declare (uses sad-plus))
 (declare (uses sad-times))
+(declare (uses sad-map))
 
 (define sad-message "
 sad -- Scheme-Aware Ducts (\"sed makes me sad\").
