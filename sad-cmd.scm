@@ -31,7 +31,7 @@
 (declare (uses sad-map))
 
 (define sad-message "
-sad -- Scheme-Aware Ducts (\"sed makes me sad\").
+sad -- Scheme-Aware Ducts (\"sed makes me sad\", or \"sad makes me sed\").
 
 sad is a program for text processing on the command line.  It
 provides limited commands for usual and specific tasks and more
