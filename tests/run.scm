@@ -23,6 +23,9 @@
 (test-group "sort"
   (include "sort-density.scm"))
 
+(test-group "tabularize"
+  (include "test-tabularize.scm"))
+
 (test-end "sad")
 
 (test-exit)

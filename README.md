@@ -356,6 +356,29 @@ split [<options>] [<pattern>]
 
   $ echo 1_2:3 | sad split --sre '(or "_" ":")'
   ("1" "2" "3")
+
+tabularize
+  Tabularize the input, which will be read as a list of lists.
+
+    <options>:
+    --padding | -p
+      Number of spaces to print around table items.
+
+  Examples:
+
+  $ seq 9 | sad buffer 3 | sad tabularize
+  ┌───────────┐
+  │ 1 │ 2 │ 3 │
+  │ 4 │ 5 │ 6 │
+  │ 7 │ 8 │ 9 │
+  └───────────┘
+
+  $ cat /etc/passwd | sad lines 0:3 | sad split : | sad tabularize
+  ┌─────────────────────────────────────────────────────────────┐
+  │ root   │ x │ 0 │ 0 │ root   │ /root     │ /bin/bash         │
+  │ daemon │ x │ 1 │ 1 │ daemon │ /usr/sbin │ /usr/sbin/nologin │
+  │ bin    │ x │ 2 │ 2 │ bin    │ /bin      │ /usr/sbin/nologin │
+  └─────────────────────────────────────────────────────────────┘
 ```
 
 ## Extending sad
