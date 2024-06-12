@@ -273,10 +273,10 @@ format <format>
 
   Example:
 
-  $ echo 12 12 12 12 |
+  $ echo 12 12 12 12 12 12 12 |
     sad buffer -r |
-    sad format 'dec: ~a bin: ~B octal: ~O hexa: ~X~%'
-  dec: 12 bin: 1100 octal: 14 hexa: c
+    sad format 'dec: ~a bin: ~B octal: ~O hexa: ~X roman: ~@R ord: ~R~%'
+  dec: 12 bin: 1100 octal: 14 hexa: c roman: XII ord: twelve
 
 join [<joiner>]
   Join fields in the input with <joiner>.  If <joiner> is not provided,
