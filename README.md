@@ -256,11 +256,7 @@ filter [<options>] <pattern>
   Examples:
 
   # Remove empty lines
-  $ printf 'a
-
-b
-
-c' | sad filter -d ^$
+  $ printf 'a\n\nb\n\nc' | sad filter -d ^$
   a
   b
   c
