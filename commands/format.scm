@@ -8,10 +8,17 @@
 (import sad)
 
 (define-command 'format "\
-format [<options>] <format>
+format <format>
   Format items of the input the specified format.  The input must
   be a Scheme list which will be given, alongside with the <format>
-  string, as argument to the `format' procedure of the `format' egg."
+  string, as argument to the `format' procedure of the `format' egg.
+
+  Example:
+
+  $ echo 12 12 12 12 |
+    sad buffer -r |
+    sad format 'dec: ~a bin: ~B octal: ~O hexa: ~X~%'
+  dec: 12 bin: 1100 octal: 14 hexa: c"
   (lambda (args*)
     (let* ((args (parse-command-line args* '()))
            (format-string (and-let* ((f (get-opt '(--) args)))
