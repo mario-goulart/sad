@@ -253,6 +253,23 @@ filter [<options>] <pattern>
     --stop-after-matches | -n <num matches>
       Stop after reaching any matches.
 
+  Examples:
+
+  # Remove empty lines
+  $ printf 'a
+
+b
+
+c' | sad filter -d ^$
+  a
+  b
+  c
+
+  # Print lines with 3 or more characters
+  $ (echo aa; echo a; echo aaa; echo aaaa) | sad filter '.{3}'
+  aaa
+  aaaa
+
 format [<options>] <format>
   Format items of the input the specified format.  The input must
   be a Scheme list which will be given, alongside with the <format>

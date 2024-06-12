@@ -51,7 +51,20 @@ filter [<options>] <pattern>
       is used.
 
     --stop-after-matches | -n <num matches>
-      Stop after reaching any matches."
+      Stop after reaching any matches.
+
+  Examples:
+
+  # Remove empty lines
+  $ printf 'a\n\nb\n\nc' | sad filter -d ^$
+  a
+  b
+  c
+
+  # Print lines with 3 or more characters
+  $ (echo aa; echo a; echo aaa; echo aaaa) | sad filter '.{3}'
+  aaa
+  aaaa"
   (lambda (args*)
     (let* ((args (parse-command-line
                   args*
