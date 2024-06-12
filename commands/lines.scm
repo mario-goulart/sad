@@ -20,7 +20,26 @@ lines <range> [<range> ...]
       Delete the lines in the given ranges.
 
     --read-sexp | -r
-      Assume inputs are sexps."
+      Assume inputs are sexps.
+
+  Examples:
+
+  $ seq 10 | sad lines 4:7
+  5
+  6
+  7
+
+  $ seq 10 | sad lines -1
+  10
+
+  $ seq 10 | sad lines 1:-7
+  2
+  3
+
+  $ seq 10 | sad lines 7:
+  8
+  9
+  10"
   (lambda (args*)
     (let* ((args (parse-command-line
                   args*

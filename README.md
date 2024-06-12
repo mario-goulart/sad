@@ -308,6 +308,25 @@ lines <range> [<range> ...]
     --read-sexp | -r
       Assume inputs are sexps.
 
+  Examples:
+
+  $ seq 10 | sad lines 4:7
+  5
+  6
+  7
+
+  $ seq 10 | sad lines -1
+  10
+
+  $ seq 10 | sad lines 1:-7
+  2
+  3
+
+  $ seq 10 | sad lines 7:
+  8
+  9
+  10
+
 map <options> <op> [<converter>]
   Expect a Scheme list as input and apply <op> to the items of the list.
   <converter> defaults to `identity' and will be applied to all elements
