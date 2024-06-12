@@ -167,6 +167,20 @@ eval <options> <exp>
       expression).  Lines that match <pattern> are just printed.
       --not-match and --read-sexp are mutually exclusive.
 
+  Examples:
+
+  # Reverse the order of lines (emulates 'tac')
+  $ seq 3 | sad buffer | sad eval -r '(for-each print (reverse INPUT))'
+  3
+  2
+  1
+
+  # Print the number of columns in each line, followed by the line
+  $ (echo a; echo a b c; echo a b) | sad eval '(print (length (COLS)) ":" INPUT)'
+  1:a
+  3:a b c
+  2:a b
+
 extract [<options>] <pattern>
   Extract strings matching <pattern> in the input.  <pattern> must use the
   syntax for grouping to indicate what must be extracted.  Produce a Scheme
