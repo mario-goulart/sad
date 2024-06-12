@@ -28,7 +28,17 @@ replace [<options>] <pattern> <replacement>
     --not-match | -n <not match pattern>
       Only replace in lines which which do NOT match <not match pattern>
       (a regular expression).  Lines that match <not match pattern> are
-      just printed."
+      just printed.
+
+  Examples:
+
+  $ echo Hello, world | sad replace Hello, \"Bye, cruel\"
+  Bye, cruel world
+
+  $ (echo foo; echo bar; echo baz) | sad replace --sre '(or \"r\" \"z\")' g
+  foo
+  bag
+  bag"
   (lambda (args*)
     (let* ((args (parse-command-line
                   args*
