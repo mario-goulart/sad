@@ -92,13 +92,16 @@ buffer [<options>] [<number of lines>]
   ("1" "2" "3")("4" "5" "6")("7" "8" "9")
 
   # Select even lines
-  $ seq 6 | sad buffer 2 | sad cols 1 | sad join
+  $ seq 6 | sad buffer 2 | sad cols -r 1 | sad join
   2
   4
   6
 
 cols [<options>] <range> [<range> ...]
-  Select columns based on ranges.  Input is expected to be a Scheme list.
+  Select columns based on ranges.  If --read-sexp is provided, the
+  input is expected to be a Scheme list, otherwise a string will be
+  read and split according to the pattern specified by --split-pattern
+  (or a space, it if is not provided).
 
   Syntax of ranges:
   * `<number>': a single column whose index is <number>
@@ -111,22 +114,44 @@ cols [<options>] <range> [<range> ...]
       Delete columns in the given ranges.  Note that selection and
       deletion are mutually exclusive.
 
+    --read-sexp | -r
+      Assume inputs are sexps (if provided, output will be a Scheme list).
+
+    --split-pattern | -s <pattern>
+      Split input by <pattern>.  --read-sexp and --split-pattern are
+      mutually exclusive.  If not provided, a space will be used.
+
+    --sre | -S
+      Indicate that <pattern> uses SRE syntax.
+
   Examples:
 
-  $ echo 1 2 3 | sad split | sad cols 0
-  ("1")
+  $ echo 1 2 3 | sad cols 0
+  1
 
-  $ echo 1 2 3 | sad split | sad cols 1:
-  ("2" "3")
+  $ echo 1 2 3 | sad cols 2 0
+  3 1
 
-  $ echo 1 2 3 | sad split | sad cols -1
-  ("3")
+  $ echo 1 2 3 | sad cols 1:
+  2 3
 
-  $ echo 1 2 3 | sad split | sad cols :-1
-  ("1" "2")
+  $ echo 1 2 3 | sad cols -1
+  3
 
-  $ echo 1 2 3 | sad split | sad cols --delete 1
-  ("1" "3")
+  $ echo 1 2 3 | sad cols :-1
+  1 2
+
+  $ echo 1 2 3 | sad cols --delete 1
+  1 3
+
+  $ echo 1:2:3 | sad cols -s : 1
+  2
+
+  $ echo 1:2_3 | sad cols -S -s '(or ":" "_")' 1
+  2
+
+  $ echo 1 2 3 | sad split | sad cols -r 1 | sad join
+  2
 
 eval <options> <exp>
   Evaluate the Scheme expression <exp>.  The `INPUT' and `LINENO'

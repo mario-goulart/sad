@@ -23,7 +23,7 @@ buffer [<options>] [<number of lines>]
   (\"1\" \"2\" \"3\")(\"4\" \"5\" \"6\")(\"7\" \"8\" \"9\")
 
   # Select even lines
-  $ seq 6 | sad buffer 2 | sad cols 1 | sad join
+  $ seq 6 | sad buffer 2 | sad cols -r 1 | sad join
   2
   4
   6"
