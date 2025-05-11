@@ -72,7 +72,7 @@ sort [<options>]
 
       (let ((results
              (sort
-              (read-stdin-sexp)
+              (read)
               (if eval-criteria?
                   (eval criteria)
                   (lambda (l1 l2)

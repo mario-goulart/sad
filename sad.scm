@@ -14,7 +14,6 @@
  in-range?
  list-slice
  eval-scheme
- read-stdin-sexp
  read-numbers
  )
 
@@ -28,12 +27,6 @@
         (chicken string))
 (import simple-logger slice srfi-1)
 
-(define (read-stdin-line)
-  (with-input-from-port (current-input-port) read-line))
-
-(define (read-stdin-sexp)
-  (with-input-from-port (current-input-port) read))
-
 (define (read-numbers)
   ;; Read from stdin and return a list of numbers.  Expect a list as
   ;; input.
@@ -45,7 +38,7 @@
 
 (define (for-each-line proc #!key finalizer)
   (let loop ((lineno 0))
-    (let ((line (read-stdin-line)))
+    (let ((line (read-line)))
       (if (eof-object? line)
           (when finalizer
             (finalizer lineno))
@@ -55,7 +48,7 @@
 
 (define (for-each-sexp proc #!key finalizer)
   (let loop ((sexpno 0))
-    (let ((sexp (read-stdin-sexp)))
+    (let ((sexp (read)))
       (if (eof-object? sexp)
           (when finalizer
             (finalizer sexpno))
