@@ -46,9 +46,11 @@
             (proc line lineno)
             (loop (add1 lineno)))))))
 
-(define (for-each-sexp proc #!key finalizer)
+(define (for-each-sexp proc #!key finalizer reader)
   (let loop ((sexpno 0))
-    (let ((sexp (read)))
+    (let ((sexp (if reader
+                    (reader)
+                    (read))))
       (if (eof-object? sexp)
           (when finalizer
             (finalizer sexpno))
