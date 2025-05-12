@@ -71,13 +71,13 @@ replace [<options>] <pattern> <replacement>
                  (car pattern/replacement)))
             (replacement (cadr pattern/replacement))
             (replacer (if replace-all? irregex-replace/all irregex-replace)))
-      (for-each-line
-       (lambda (line lineno)
-         (if (or (and (not match-pattern) (not not-match-pattern))
-                 (and match-pattern (irregex-search match-pattern line))
-                 (and not-match-pattern
-                      (not (irregex-search not-match-pattern line))))
-             (print (replacer pattern line replacement))
-             (print line))))))))
+        (for-each-line
+         (lambda (line lineno)
+           (if (or (and (not match-pattern) (not not-match-pattern))
+                   (and match-pattern (irregex-search match-pattern line))
+                   (and not-match-pattern
+                        (not (irregex-search not-match-pattern line))))
+               (print (replacer pattern line replacement))
+               (print line))))))))
 
 ) ;; end module
