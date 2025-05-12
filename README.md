@@ -392,6 +392,12 @@ replace [<options>] <pattern> <replacement>
       (a regular expression).  Lines that match <not match pattern> are
       just printed.
 
+    --translate-escapes | -e
+      Translate escaped characters into their corresponding control
+      characters.  The following ones are supported:
+      * \n => newline
+      * \t => tab
+
   Examples:
 
   $ echo Hello, world | sad replace Hello, "Bye, cruel"

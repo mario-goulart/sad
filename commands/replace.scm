@@ -5,7 +5,8 @@
 (import scheme)
 (import (chicken base)
         (chicken irregex)
-        (chicken port))
+        (chicken port)
+        (chicken string))
 (import commands optimism simple-logger)
 (import sad)
 
@@ -30,6 +31,12 @@ replace [<options>] <pattern> <replacement>
       (a regular expression).  Lines that match <not match pattern> are
       just printed.
 
+    --translate-escapes | -e
+      Translate escaped characters into their corresponding control
+      characters.  The following ones are supported:
+      * \\n => newline
+      * \\t => tab
+
   Examples:
 
   $ echo Hello, world | sad replace Hello, \"Bye, cruel\"
@@ -45,10 +52,14 @@ replace [<options>] <pattern> <replacement>
                   `(((--all -a))
                     ((--sre -S))
                     ((--match -m) . p)
-                    ((--not-match -n) . p))))
+                    ((--not-match -n) . p)
+                    ((--translate-escapes -e))
+                    )))
            (use-sre? (get-opt '(--sre -S) args flag?: #t))
            (match-pattern% (get-opt '(--match -m) args))
            (not-match-pattern% (get-opt '(--not-match -n) args))
+           (translate-escapes?
+            (get-opt '(--translate-escapes -e) args flag?: #t))
            (match-pattern
             (and match-pattern%
                  (if use-sre?
@@ -65,12 +76,17 @@ replace [<options>] <pattern> <replacement>
       (unless (= (length pattern/replacement) 2)
         (die! "replace: invalid <pattern> <replacement> specification."))
 
-      (let ((pattern
-             (if use-sre?
-                 (with-input-from-string (car pattern/replacement) read)
-                 (car pattern/replacement)))
-            (replacement (cadr pattern/replacement))
-            (replacer (if replace-all? irregex-replace/all irregex-replace)))
+      (let* ((pattern
+              (if use-sre?
+                  (with-input-from-string (car pattern/replacement) read)
+                  (car pattern/replacement)))
+             (replacement% (cadr pattern/replacement))
+             (replacement (if translate-escapes?
+                              (string-translate* replacement%
+                                                 '(("\\n" . "\n")
+                                                   ("\\t" . "\t")))
+                              replacement%))
+             (replacer (if replace-all? irregex-replace/all irregex-replace)))
         (for-each-line
          (lambda (line lineno)
            (if (or (and (not match-pattern) (not not-match-pattern))

@@ -26,6 +26,9 @@
 (test-group "tabularize"
   (include "test-tabularize.scm"))
 
+(test-group "translate"
+  (include "test-translate.scm"))
+
 (test-end "sad")
 
 (test-exit)
