@@ -110,7 +110,7 @@ tabularize
   Tabularize the input, which will be read as a list of lists.
 
     <options>:
-    --padding | -p
+    --padding | -p <num spaces>
       Number of spaces to print around table items.
 
   Examples:
