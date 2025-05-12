@@ -110,7 +110,7 @@
 ;;  awk '{for (i=1; i<=NF; i++) s=s+$i}; END{print s}'
 (test-sad "add all fields in all lines and print the sum"
           "seq 3 | awk '{for (i=1; i<=NF; i++) s=s+$i}; END{print s}'"
-          "seq 3 | sad buffer | sad eval -r '(print (apply + (map string->number INPUT)))'")
+          "seq 3 | sad split | sad buffer -r | sad apply append | sad +")
 
 (test-sad "add all fields in all lines and print the sum"
           "seq 3 | awk '{for (i=1; i<=NF; i++) s=s+$i}; END{print s}'"
