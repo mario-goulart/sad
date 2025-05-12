@@ -17,26 +17,26 @@ sort [<options>]
   command.
 
   <options>
-    --column | -c COLNUM
-      Sort using column COLNUM.
+    --column | -c <colnum>
+      Sort using column <colnum>.
 
-    --criteria | -C CRITERIA
-      Sort according to CRITERIA.  Available ones are:
+    --criterion | -C <criterion>
+      Sort according to <criterion>.  Available ones are:
       * numeric (columns will be implicitly converted to numbers)
       * alphabetic (default)
       * natural (using `natural-string<?' from the natural-sort egg)
-      If --eval is provided, use CRITERIA as a sexp to be evaluated.
+      If --eval is provided, use <criterion> as a sexp to be evaluated.
 
     --reverse | -r
       Reverse results.
 
     --eval | -e
-      Indicate that CRITERIA for --criteria is a sexp."
+      Indicate that <criterion> for --criterion is a sexp."
   (lambda (args*)
     (let* ((args (parse-command-line
                   args*
                   '(((--column -c) . colnum)
-                    ((--criteria -C) . criteria)
+                    ((--criterion -C) . criterion)
                     ((--reverse -r))
                     ((--eval -e))
                     )))
@@ -48,21 +48,21 @@ sort [<options>]
                            (die! "sort: --column: argument must be a positive integer"))
                          (inexact->exact n))
                        0))
-           (eval-criteria? (get-opt '(--eval -e) args flag?: #t))
-           (criteria% (get-opt '(--criteria -C) args))
-           (criteria
-            (if criteria%
-                (if eval-criteria?
-                    (with-input-from-string criteria% read)
-                    (case (string->symbol criteria%)
+           (eval-criterion? (get-opt '(--eval -e) args flag?: #t))
+           (criterion% (get-opt '(--criterion -C) args))
+           (criterion
+            (if criterion%
+                (if eval-criterion?
+                    (with-input-from-string criterion% read)
+                    (case (string->symbol criterion%)
                       ((numeric) <)
                       ((alphabetic) string<?)
                       ((natural) natural-string<?)
                       (else
-                       (die! "sort: --criteria: invalid argument ~a" criteria%))))
+                       (die! "sort: --criterion: invalid argument ~a" criterion%))))
                 string<?))
            (accessor
-            (if (and criteria% (equal? criteria% "numeric"))
+            (if (and criterion% (equal? criterion% "numeric"))
                 (lambda (l)
                   (string->number
                    (string-trim-both (list-ref l colnum))))
@@ -73,10 +73,10 @@ sort [<options>]
       (let ((results
              (sort
               (read)
-              (if eval-criteria?
-                  (eval criteria)
+              (if eval-criterion?
+                  (eval criterion)
                   (lambda (l1 l2)
-                    (criteria (accessor l1) (accessor l2)))))))
+                    (criterion (accessor l1) (accessor l2)))))))
         (for-each write
                   (if reverse?
                       (reverse results)

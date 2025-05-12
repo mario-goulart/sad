@@ -409,21 +409,21 @@ sort [<options>]
   command.
 
   <options>
-    --column | -c COLNUM
-      Sort using column COLNUM.
+    --column | -c <colnum>
+      Sort using column <colnum>.
 
-    --criteria | -C CRITERIA
-      Sort according to CRITERIA.  Available ones are:
+    --criterion | -C <criterion>
+      Sort according to <criterion>.  Available ones are:
       * numeric (columns will be implicitly converted to numbers)
       * alphabetic (default)
       * natural (using `natural-string<?' from the natural-sort egg)
-      If --eval is provided, use CRITERIA as a sexp to be evaluated.
+      If --eval is provided, use <criterion> as a sexp to be evaluated.
 
     --reverse | -r
       Reverse results.
 
     --eval | -e
-      Indicate that CRITERIA for --criteria is a sexp.
+      Indicate that <criterion> for --criterion is a sexp.
 
 split [<options>] [<pattern>]
   Split the input according to <pattern> (a regular expression) and
