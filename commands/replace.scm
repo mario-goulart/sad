@@ -5,8 +5,7 @@
 (import scheme)
 (import (chicken base)
         (chicken irregex)
-        (chicken port)
-        (chicken string))
+        (chicken port))
 (import commands optimism simple-logger)
 (import sad)
 
@@ -82,9 +81,7 @@ replace [<options>] <pattern> <replacement>
                   (car pattern/replacement)))
              (replacement% (cadr pattern/replacement))
              (replacement (if translate-escapes?
-                              (string-translate* replacement%
-                                                 '(("\\n" . "\n")
-                                                   ("\\t" . "\t")))
+                              (translate-escapes replacement%)
                               replacement%))
              (replacer (if replace-all? irregex-replace/all irregex-replace)))
         (for-each-line

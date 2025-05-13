@@ -303,9 +303,16 @@ format <format>
     sad format 'dec: ~a bin: ~B octal: ~O hexa: ~X roman: ~@R ord: ~R~%'
   dec: 12 bin: 1100 octal: 14 hexa: c roman: XII ord: twelve
 
-join [<joiner>]
+join [<options>] [<joiner>]
   Join fields in the input with <joiner>.  If <joiner> is not provided,
   a space will be used.  Input is expected to be Scheme lists.
+
+  <options>:
+    --translate-escapes | -e
+      Translate escaped characters into their corresponding control
+      characters.  The following ones are supported:
+      * \n => newline
+      * \t => tab
 
   Examples:
 
@@ -314,6 +321,11 @@ join [<joiner>]
 
   $ echo 1 2 3 | sad split | sad join :
   1:2:3
+
+  $ echo 1 2 3 | sad split | sad join -e '\n'
+  1
+  2
+  3
 
 lines <range> [<range> ...]
   Select lines by number or range.  Syntax of ranges:

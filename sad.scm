@@ -15,6 +15,7 @@
  list-slice
  eval-scheme
  read-numbers
+ translate-escapes
  )
 
 (import scheme)
@@ -228,5 +229,10 @@
                   (list ,@(map car bindings)))))))))
     (cons (car res/new-bindings)
           (map list (map car bindings) (cdr res/new-bindings)))))
+
+(define (translate-escapes str)
+  (string-translate* str
+                     '(("\\n" . "\n")
+                       ("\\t" . "\t"))))
 
 ) ;; end module

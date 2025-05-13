@@ -29,6 +29,9 @@
 (test-group "translate"
   (include "test-translate.scm"))
 
+(test-group "join"
+  (include "test-join.scm"))
+
 (test-end "sad")
 
 (test-exit)
