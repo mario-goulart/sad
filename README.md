@@ -470,6 +470,9 @@ tabularize
     --padding | -p <num spaces>
       Number of spaces to print around table items.
 
+    --borderless | -B
+      Draw tables without borders.
+
   Examples:
 
   $ seq 9 | sad buffer 3 | sad tabularize
@@ -478,6 +481,11 @@ tabularize
   │ 4 │ 5 │ 6 │
   │ 7 │ 8 │ 9 │
   └───────────┘
+
+  $ seq 9 | sad buffer 3 | sad tabularize --borderless
+  1  2  3
+  4  5  6
+  7  8  9
 
   $ cat /etc/passwd | sad lines 0:3 | sad split : | sad tabularize
   ┌─────────────────────────────────────────────────────────────┐
