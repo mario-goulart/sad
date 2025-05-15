@@ -4,6 +4,7 @@
 
 (import scheme)
 (import (chicken base)
+        (chicken fixnum)
         (chicken format)
         (chicken port)
         (chicken string))
@@ -45,7 +46,7 @@
       (display str)
       (loop (sub1 times)))))
 
-(define (render-table table #!key padding)
+(define (render-table table #!key padding borderless?)
   (let* ((padding (or padding 1))
          (max-lines (length table))
          (max-cols (get-max-cols table))
@@ -59,34 +60,43 @@
             (let ((corner-left (if top? "┌" "└"))
                   (corner-right (if top? "┐" "┘")))
               (display corner-left)
-              (display-* "─" table-width)
+              (display-* (if borderless? " " "─") table-width)
               (print corner-right)))))
     (let loop ((lines table) (lineno 0))
-      (when (zero? lineno)
+      (when (and (zero? lineno) (not borderless?))
         (render-horizontal-border #t))
 
       (unless (null? lines)
         (let* ((line (car lines))
-               (sep "│"))
+               (sep (if borderless? " " "│"))
+               (num-cols (length line))
+               (last-col (sub1 num-cols))
+               (last-col? (lambda (col)
+                            (fx= col last-col))))
           (print
            (string-append
-            sep
+            (if borderless? "" sep)
             (string-intersperse
              (map (lambda (val colno)
                     (with-output-to-string
                       (lambda ()
-                        (display-* " " padding)
-                        (printf "~a"
-                                (string-pad-right
-                                 (->string val)
-                                 (vector-ref cols-width colno)))
-                        (display-* " " padding))))
+                        (unless borderless?
+                          (display-* " " padding))
+                        (if (and borderless? (last-col? colno))
+                            (display val)
+                            (begin
+                              (printf "~a"
+                                      (string-pad-right
+                                       (->string val)
+                                       (vector-ref cols-width colno)))
+                              (display-* " " padding))))))
                   line
-                  (iota (length line)))
+                  (iota num-cols))
              sep)
-            sep)))
+            (if borderless? "" sep))))
         (loop (cdr lines) (add1 lineno))))
-    (render-horizontal-border #f)))
+    (unless borderless?
+      (render-horizontal-border #f))))
 
 
 (define-command 'tabularize "\
@@ -97,6 +107,9 @@ tabularize
     --padding | -p <num spaces>
       Number of spaces to print around table items.
 
+    --borderless | -B
+      Draw tables without borders.
+
   Examples:
 
   $ seq 9 | sad buffer 3 | sad tabularize
@@ -105,6 +118,11 @@ tabularize
   │ 4 │ 5 │ 6 │
   │ 7 │ 8 │ 9 │
   └───────────┘
+
+  $ seq 9 | sad buffer 3 | sad tabularize --borderless
+  1  2  3
+  4  5  6
+  7  8  9
 
   $ cat /etc/passwd | sad lines 0:3 | sad split : | sad tabularize
   ┌─────────────────────────────────────────────────────────────┐
@@ -116,7 +134,9 @@ tabularize
     (let* ((table '())
            (args (parse-command-line
                   args*
-                  `(((--padding -p) . ,string->number))))
+                  `(((--borderless -B))
+                    ((--padding -p) . ,string->number))))
+           (borderless? (get-opt '(--borderless -B) args flag?: #t))
            (padding (get-opt '(--padding -p) args)))
       (let loop ()
         (let ((line (read)))
@@ -125,6 +145,8 @@ tabularize
               (begin
                 (set! table (cons line table))
                 (loop)))))
-      (render-table table padding: (or padding 1)))))
+      (render-table table
+                    padding: (or padding 1)
+                    borderless?: borderless?))))
 
 ) ;; end module
