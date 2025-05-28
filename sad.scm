@@ -232,7 +232,8 @@
 
 (define (translate-escapes str)
   (string-translate* str
-                     '(("\\n" . "\n")
+                     '(("\\0" . "\x00")
+                       ("\\n" . "\n")
                        ("\\t" . "\t"))))
 
 ) ;; end module

@@ -17,6 +17,7 @@ join [<options>] [<joiner>]
     --translate-escapes | -e
       Translate escaped characters into their corresponding control
       characters.  The following ones are supported:
+      * \\0 => null
       * \\n => newline
       * \\t => tab
 
