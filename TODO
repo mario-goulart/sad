@@ -1,9 +1,5 @@
-## New params
-
-* cols: when sep is "", operate on chars
-* lines: regexes as ranges
-
 ## Misc
+* lines: regexes as ranges
 * use utf8 and slice-utf8
 * remove format?
 
