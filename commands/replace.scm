@@ -75,10 +75,13 @@ replace [<options>] <pattern> <replacement>
       (unless (= (length pattern/replacement) 2)
         (die! "replace: invalid <pattern> <replacement> specification."))
 
-      (let* ((pattern
+      (let* ((pattern%
               (if use-sre?
                   (with-input-from-string (car pattern/replacement) read)
                   (car pattern/replacement)))
+             (pattern (if (and translate-escapes? (not use-sre?))
+                          (translate-escapes pattern%)
+                          pattern%))
              (replacement% (cadr pattern/replacement))
              (replacement (if translate-escapes?
                               (translate-escapes replacement%)
