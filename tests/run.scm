@@ -26,8 +26,8 @@
 (test-group "tabularize"
   (include "test-tabularize.scm"))
 
-(test-group "translate"
-  (include "test-translate.scm"))
+(test-group "replace"
+  (include "test-replace.scm"))
 
 (test-group "join"
   (include "test-join.scm"))
