@@ -51,8 +51,9 @@ Scheme Regular Expression Syntax_ (i.e., the one used by irregex).
 ")
 
 (let ((user-conf
-       (make-pathname (get-environment-variable "HOME") ".sad.conf")))
-  (when (file-exists? user-conf)
+       (make-pathname (get-environment-variable "HOME") ".sad.conf"))
+      (no-conf-load? (get-environment-variable "SAD_NO_CONF_LOAD")))
+  (when (and (not no-conf-load?) (file-exists? user-conf))
     (load user-conf)))
 
 (let ((args (command-line-arguments)))

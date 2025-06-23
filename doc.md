@@ -8,8 +8,8 @@ THIS IS JUST A POOR TEMPLATE -- SEE README.md
 
 ## Extending sad
 
-`sad` loads `$HOME/.sad.conf` at start up.  There you can define your
-own commands.
+`sad` loads `$HOME/.sad.conf` at start up (unless the `SAD_NO_LOAD_CONF`
+environment variable is set).  There you can define your own commands.
 
 Example:
 
