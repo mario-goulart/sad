@@ -30,6 +30,7 @@
 (declare (uses sad-times))
 (declare (uses sad-map))
 (declare (uses sad-tabularize))
+(declare (uses sad-trim))
 
 (define sad-message "
 sad -- Scheme-Aware Ducts (\"sed makes me sad\", or \"sad makes me sed\").

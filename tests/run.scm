@@ -32,6 +32,9 @@
 (test-group "join"
   (include "test-join.scm"))
 
+(test-group "trim"
+  (include "test-trim.scm"))
+
 (test-end "sad")
 
 (test-exit)

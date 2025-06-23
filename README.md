@@ -495,6 +495,30 @@ tabularize
   │ daemon │ x │ 1 │ 1 │ daemon │ /usr/sbin │ /usr/sbin/nologin │
   │ bin    │ x │ 2 │ 2 │ bin    │ /bin      │ /usr/sbin/nologin │
   └─────────────────────────────────────────────────────────────┘
+
+trim
+  Remove blanks around tokens (lines/sexps).
+
+  <option>s:
+    --read-sexp | -r
+      Assume inputs are sexps.  The output will also be written as sexps.
+
+    --right
+      Remove blanks on the right side of tokens.
+
+    --left
+      Remove blanks on the left side of tokens.
+
+  Examples:
+
+  $ echo '  foo  ' | sad trim
+  foo
+
+  $ echo '  foo  ' | sad trim --right
+    foo
+
+  $ echo '  foo  ' | sad trim --left
+  foo  
 ```
 
 ## Extending sad

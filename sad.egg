@@ -24,6 +24,7 @@
   (c-object sad-split      (source "commands/split.scm")      (component-dependencies sad) (csc-options -setup-mode))
   (c-object sad-tabularize (source "commands/tabularize.scm") (component-dependencies sad) (csc-options -setup-mode))
   (c-object sad-times      (source "commands/times.scm")      (component-dependencies sad) (csc-options -setup-mode))
+  (c-object sad-trim       (source "commands/trim.scm")       (component-dependencies sad) (csc-options -setup-mode))
   (program sad-cmd
            (component-dependencies sad)
            (objects sad-apply
@@ -41,5 +42,7 @@
                     sad-sort
                     sad-split
                     sad-tabularize
-                    sad-times)
+                    sad-times
+                    sad-trim
+                    )
            (install-name sad))))
