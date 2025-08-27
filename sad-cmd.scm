@@ -61,7 +61,7 @@ Scheme Regular Expression Syntax_ (i.e., the one used by irregex).
   (when (null? args)
     (show-main-help 1 message: sad-message))
 
-  (when (member (car args) '("-h" "-help" "--help"))
+  (when (member (car args) (help-options))
     (show-main-help 0 message: sad-message))
 
   (or (and-let* ((cmd (string->symbol (car args)))
