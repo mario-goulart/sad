@@ -8,7 +8,7 @@
         (chicken format)
         (chicken port)
         (chicken string))
-(import commands optimism srfi-1 srfi-13)
+(import commands optimism srfi-1 utf8-srfi-13)
 (import sad)
 
 (define (get-max-cols table)
