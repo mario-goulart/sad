@@ -35,6 +35,9 @@
 (test-group "trim"
   (include "test-trim.scm"))
 
+(test-group "extract"
+  (include "test-extract.scm"))
+
 (test-end "sad")
 
 (test-exit)

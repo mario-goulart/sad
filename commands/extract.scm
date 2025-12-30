@@ -53,17 +53,15 @@ extract [<options>] <pattern>
         (for-each-line
          (lambda (line lineno)
            (let ((matches (irregex-search pattern line)))
-             (write
-              (if (irregex-match-data? matches)
-                  (or (and-let* ((names (irregex-match-names matches)))
-                        (if (null? names)
-                            #f
-                            (map (lambda (submatch-name)
-                                   (cons submatch-name
-                                         (irregex-match-substring matches
-                                                                  submatch-name)))
-                                 (map car names))))
-                      (list (irregex-match-substring matches 1)))
-                  '())))))))))
-
+              (when (irregex-match-data? matches)
+                (write
+                 (or (and-let* ((names (irregex-match-names matches)))
+                       (if (null? names)
+                           #f
+                           (map (lambda (submatch-name)
+                                  (cons submatch-name
+                                        (irregex-match-substring matches
+                                                                 submatch-name)))
+                                (map car names))))
+                     (list (irregex-match-substring matches 1))))))))))))
 ) ;; end module
