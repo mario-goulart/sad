@@ -8,7 +8,7 @@
         (chicken format)
         (chicken port)
         (chicken string))
-(import commands optimism srfi-1 utf8-srfi-13)
+(import commands optimism simple-logger srfi-1 utf8-srfi-13)
 (import sad)
 
 (define (get-max-cols table)
@@ -46,7 +46,24 @@
       (display str)
       (loop (sub1 times)))))
 
-(define (render-table table #!key padding borderless?)
+(define (render-line-sep cols-width max-cols sep line-char padding)
+  (display sep)
+  (for-each (lambda (colno)
+              (display-* line-char (+ (* 2 padding) (vector-ref cols-width colno)))
+              (display sep))
+            (iota max-cols))
+  (newline))
+
+(define (render-header cols-width max-cols sep line-char padding)
+  (display sep)
+  (for-each (lambda (colno)
+              (display-* " " (+ (* 2 padding) (vector-ref cols-width colno)))
+              (display sep))
+            (iota max-cols))
+  (newline)
+  (render-line-sep cols-width max-cols sep line-char padding))
+
+(define (render-table table #!key padding borderless? markdown? grid?)
   (let* ((padding (or padding 1))
          (max-lines (length table))
          (max-cols (get-max-cols table))
@@ -55,20 +72,30 @@
                        (+ (* 2 padding max-cols)
                           max-cols
                           (apply + (vector->list cols-width)))))
+         (line-char (cond (borderless? " ")
+                          (markdown? "-")
+                          (else "─")))
+         (sep (cond (borderless? " ")
+                     (markdown? "|")
+                     (else "│")))
          (render-horizontal-border
           (lambda (top?)
-            (let ((corner-left (if top? "┌" "└"))
-                  (corner-right (if top? "┐" "┘")))
+            (let ((corner-left (if markdown? "|" (if top? "┌" "└")))
+                  (corner-right (if markdown? "|" (if top? "┐" "┘"))))
               (display corner-left)
-              (display-* (if borderless? " " "─") table-width)
+              (display-* line-char table-width)
               (print corner-right)))))
+
+    (when (and markdown? (not (null? table)))
+      ;; Markdown requires a header
+      (render-header cols-width max-cols sep line-char padding))
+
     (let loop ((lines table) (lineno 0))
-      (when (and (zero? lineno) (not borderless?))
+      (when (and (zero? lineno) (not borderless?) (not markdown?))
         (render-horizontal-border #t))
 
       (unless (null? lines)
         (let* ((line (car lines))
-               (sep (if borderless? " " "│"))
                (num-cols (length line))
                (last-col (sub1 num-cols))
                (last-col? (lambda (col)
@@ -93,10 +120,12 @@
                   line
                   (iota num-cols))
              sep)
-            (if borderless? "" sep))))
+            (if borderless? "" sep)))
+          (unless (or borderless? (not grid?) (null? (cdr lines)))
+            (render-line-sep cols-width max-cols sep line-char padding)))
         (loop (cdr lines) (add1 lineno))))
-    (unless borderless?
-      (render-horizontal-border #f))))
+      (unless (or borderless? markdown?)
+        (render-horizontal-border #f))))
 
 
 (define-command 'tabularize "\
@@ -109,6 +138,12 @@ tabularize
 
     --borderless | -B
       Draw tables without borders.
+
+    --grid | -g
+      Draw internal grid (ignored when --markdown or --borderless is used).
+
+    --markdown | -m
+      Draw tables using Markdown syntax.
 
   Examples:
 
@@ -135,9 +170,18 @@ tabularize
            (args (parse-command-line
                   args*
                   `(((--borderless -B))
+                    ((--grid -g))
+                    ((--markdown -m))
                     ((--padding -p) . ,string->number))))
            (borderless? (get-opt '(--borderless -B) args flag?: #t))
+           (grid? (get-opt '(--grid -g) args flag?: #t))
+           (markdown? (get-opt '(--markdown -m) args flag?: #t))
            (padding (get-opt '(--padding -p) args)))
+      (when (and markdown? borderless?)
+        (die! "--markdown and --borderless are mutually exclusive."))
+      (when (and grid? (or markdown? borderless?))
+        (log-warning
+         "--grid is ignored when used together with --markdown or --borderless"))
       (let loop ()
         (let ((line (read)))
           (if (eof-object? line)
@@ -147,6 +191,9 @@ tabularize
                 (loop)))))
       (render-table table
                     padding: (or padding 1)
-                    borderless?: borderless?))))
+                    borderless?: borderless?
+                    markdown?: markdown?
+                    grid?: grid?
+                    ))))
 
 ) ;; end module

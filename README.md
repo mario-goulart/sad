@@ -475,6 +475,12 @@ tabularize
     --borderless | -B
       Draw tables without borders.
 
+    --grid | -g
+      Draw internal grid (ignored when --markdown or --borderless is used).
+
+    --markdown | -m
+      Draw tables using Markdown syntax.
+
   Examples:
 
   $ seq 9 | sad buffer 3 | sad tabularize
