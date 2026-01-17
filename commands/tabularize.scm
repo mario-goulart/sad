@@ -63,7 +63,7 @@
   (newline)
   (render-line-sep cols-width max-cols sep line-char padding))
 
-(define (render-table table #!key padding borderless? markdown? grid?)
+(define (render-table table #!key padding borderless? markdown? grid? first-line-is-header?)
   (let* ((padding (or padding 1))
          (max-lines (length table))
          (max-cols (get-max-cols table))
@@ -86,14 +86,16 @@
               (display-* line-char table-width)
               (print corner-right)))))
 
-    (when (and markdown? (not (null? table)))
+    (when (and markdown? (not first-line-is-header?) (not (null? table)))
       ;; Markdown requires a header
       (render-header cols-width max-cols sep line-char padding))
 
-    (let loop ((lines table) (lineno 0))
-      (when (and (zero? lineno) (not borderless?) (not markdown?))
-        (render-horizontal-border #t))
+    (unless (or borderless? markdown?)
+      (render-horizontal-border #t))
 
+    (let loop ((lines table) (lineno 0))
+      (when (and first-line-is-header? (or (not grid?) markdown?) (fx= lineno 1))
+        (render-line-sep cols-width max-cols sep line-char padding))
       (unless (null? lines)
         (let* ((line (car lines))
                (num-cols (length line))
@@ -121,7 +123,7 @@
                   (iota num-cols))
              sep)
             (if borderless? "" sep)))
-          (unless (or borderless? (not grid?) (null? (cdr lines)))
+          (unless (or borderless? (not grid?) markdown? (null? (cdr lines)))
             (render-line-sep cols-width max-cols sep line-char padding)))
         (loop (cdr lines) (add1 lineno))))
       (unless (or borderless? markdown?)
@@ -138,6 +140,9 @@ tabularize
 
     --borderless | -B
       Draw tables without borders.
+
+    --first-line-is-header | -H
+      Use the first line as the header of the table.
 
     --grid | -g
       Draw internal grid (ignored when --markdown or --borderless is used).
@@ -171,10 +176,12 @@ tabularize
                   args*
                   `(((--borderless -B))
                     ((--grid -g))
+                    ((--first-line-is-header -H))
                     ((--markdown -m))
                     ((--padding -p) . ,string->number))))
            (borderless? (get-opt '(--borderless -B) args flag?: #t))
            (grid? (get-opt '(--grid -g) args flag?: #t))
+           (first-line-is-header? (get-opt '(--first-line-is-header -H) args flag?: #t))
            (markdown? (get-opt '(--markdown -m) args flag?: #t))
            (padding (get-opt '(--padding -p) args)))
       (when (and markdown? borderless?)
@@ -189,11 +196,13 @@ tabularize
               (begin
                 (set! table (cons line table))
                 (loop)))))
-      (render-table table
-                    padding: (or padding 1)
-                    borderless?: borderless?
-                    markdown?: markdown?
-                    grid?: grid?
-                    ))))
+      (unless (null? table)
+        (render-table table
+                      padding: (or padding 1)
+                      borderless?: borderless?
+                      markdown?: markdown?
+                      grid?: grid?
+                      first-line-is-header?: first-line-is-header?
+                      )))))
 
 ) ;; end module

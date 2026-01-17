@@ -475,6 +475,9 @@ tabularize
     --borderless | -B
       Draw tables without borders.
 
+    --first-line-is-header | -H
+      Use the first line as the header of the table.
+
     --grid | -g
       Draw internal grid (ignored when --markdown or --borderless is used).
 
