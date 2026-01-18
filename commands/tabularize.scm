@@ -63,6 +63,11 @@
   (newline)
   (render-line-sep cols-width max-cols sep line-char padding))
 
+(define (ensure-full-line line cur-num-cols target-num-cols)
+  (if (fx= cur-num-cols target-num-cols)
+      line
+      (append line (make-list (- target-num-cols cur-num-cols) " "))))
+
 (define (render-table table #!key padding borderless? markdown? grid? first-line-is-header?)
   (let* ((padding (or padding 1))
          (max-lines (length table))
@@ -97,9 +102,9 @@
       (when (and first-line-is-header? (or (not grid?) markdown?) (fx= lineno 1))
         (render-line-sep cols-width max-cols sep line-char padding))
       (unless (null? lines)
-        (let* ((line (car lines))
-               (num-cols (length line))
-               (last-col (sub1 num-cols))
+        (let* ((%line (car lines))
+               (line (ensure-full-line %line (length %line) max-cols))
+               (last-col (sub1 max-cols))
                (last-col? (lambda (col)
                             (fx= col last-col))))
           (print
@@ -120,7 +125,7 @@
                                        (vector-ref cols-width colno)))
                               (display-* " " padding))))))
                   line
-                  (iota num-cols))
+                  (iota max-cols))
              sep)
             (if borderless? "" sep)))
           (unless (or borderless? (not grid?) markdown? (null? (cdr lines)))
